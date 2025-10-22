@@ -60,12 +60,15 @@
 
     <Separator/>
 
-    <!-- Búsqueda -->
+    <!-- Búsqueda y Exportar PDF -->
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Buscar:"/>
         <TextField fx:id="txtBuscar" promptText="Buscar por nombre..." prefWidth="300"/>
         <Button text="🔍 Buscar" onAction="#buscarProductos"/>
         <Button text="↻ Actualizar Tabla" onAction="#cargarProductos"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="📄 Exportar PDF" onAction="#exportarPDF"
+                style="-fx-background-color: #e67e22; -fx-text-fill: white;" prefWidth="130"/>
     </HBox>
 
     <!-- Tabla de productos -->

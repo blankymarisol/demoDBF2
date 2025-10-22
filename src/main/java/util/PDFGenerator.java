@@ -36,7 +36,7 @@ public class PDFGenerator {
      * @param nombreArchivo Nombre del archivo PDF (sin extensión)
      * @return File El archivo PDF generado, o null si hubo error
      */
-    public static File generarPDF(TableView<?> tableView, String titulo, String nombreArchivo) {
+    public static <T> File generarPDF(TableView<T> tableView, String titulo, String nombreArchivo) {
         try {
             // Crear el archivo PDF en el directorio de outputs
             String rutaCompleta = "/mnt/user-data/outputs/" + nombreArchivo + ".pdf";
@@ -117,9 +117,10 @@ public class PDFGenerator {
     /**
      * Agrega la tabla con los datos del TableView al documento
      */
-    private static void agregarTabla(Document document, TableView<?> tableView) {
+    @SuppressWarnings("unchecked")
+    private static <T> void agregarTabla(Document document, TableView<T> tableView) {
         // Obtener columnas visibles
-        ObservableList<TableColumn<?, ?>> columnas = tableView.getColumns();
+        ObservableList<TableColumn<T, ?>> columnas = tableView.getColumns();
         int numColumnas = columnas.size();
 
         // Crear tabla con el número de columnas
@@ -127,7 +128,7 @@ public class PDFGenerator {
         tabla.setWidth(UnitValue.createPercentValue(100));
 
         // Agregar encabezados de columna
-        for (TableColumn<?, ?> columna : columnas) {
+        for (TableColumn<T, ?> columna : columnas) {
             Cell headerCell = new Cell()
                     .add(new Paragraph(columna.getText())
                             .setBold()
@@ -138,14 +139,14 @@ public class PDFGenerator {
                     .setPadding(8);
             tabla.addHeaderCell(headerCell);
         }
-//saber
+
         // Agregar filas de datos
-        ObservableList<?> items = tableView.getItems();
+        ObservableList<T> items = tableView.getItems();
         boolean filaAlterna = false;
 
-        for (Object item : items) {
-            for (TableColumn<?, ?> columna : columnas) {
-                Object cellData = columna.getCellData(item);
+        for (T item : items) {
+            for (TableColumn<T, ?> columna : columnas) {
+                Object cellData = obtenerValorCelda(columna, item);
                 String cellText = cellData != null ? cellData.toString() : "";
 
                 Cell dataCell = new Cell()
@@ -173,6 +174,18 @@ public class PDFGenerator {
                 .setMarginTop(15)
                 .setFontColor(ACCENT_COLOR);
         document.add(resumen);
+    }
+
+    /**
+     * Método auxiliar para obtener el valor de una celda de forma segura
+     */
+    @SuppressWarnings("unchecked")
+    private static <T, S> Object obtenerValorCelda(TableColumn<T, S> columna, T item) {
+        try {
+            return columna.getCellObservableValue(item).getValue();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**

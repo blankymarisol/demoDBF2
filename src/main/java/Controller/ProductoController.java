@@ -8,7 +8,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.*;
+import util.PDFGenerator;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.List;
@@ -41,7 +43,6 @@ public class ProductoController implements Initializable {
         cargarProductos();
         cargarComboBoxes();
 
-        // Listener para selección de tabla
         tblProductos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 productoSeleccionado = newSelection;
@@ -62,11 +63,9 @@ public class ProductoController implements Initializable {
     }
 
     private void cargarComboBoxes() {
-        // Estados
         cmbEstado.setItems(FXCollections.observableArrayList("ACTIVO", "INACTIVO"));
         cmbEstado.setValue("ACTIVO");
 
-        // Categorías
         List<Categoria> categorias = categoriaDAO.obtenerTodas();
         cmbCategoria.setItems(FXCollections.observableArrayList(categorias));
         cmbCategoria.setConverter(new javafx.util.StringConverter<Categoria>() {
@@ -80,7 +79,6 @@ public class ProductoController implements Initializable {
             }
         });
 
-        // Tipos de Producto
         List<TipoProducto> tipos = tipoProductoDAO.obtenerTodos();
         cmbTipoProducto.setItems(FXCollections.observableArrayList(tipos));
         cmbTipoProducto.setConverter(new javafx.util.StringConverter<TipoProducto>() {
@@ -94,7 +92,6 @@ public class ProductoController implements Initializable {
             }
         });
 
-        // Unidades de Medida
         List<UnidadMedida> unidades = unidadMedidaDAO.obtenerTodas();
         cmbUnidadMedida.setItems(FXCollections.observableArrayList(unidades));
         cmbUnidadMedida.setConverter(new javafx.util.StringConverter<UnidadMedida>() {
@@ -225,6 +222,32 @@ public class ProductoController implements Initializable {
     }
 
     @FXML
+    private void exportarPDF() {
+        if (tblProductos.getItems().isEmpty()) {
+            lblMensaje.setText("✗ No hay datos para exportar");
+            lblMensaje.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        String nombreArchivo = PDFGenerator.generarNombreArchivo("Reporte_Productos");
+        File pdf = PDFGenerator.generarPDF(tblProductos, "Reporte de Productos", nombreArchivo);
+
+        if (pdf != null) {
+            lblMensaje.setText("✓ PDF generado exitosamente: " + pdf.getName());
+            lblMensaje.setStyle("-fx-text-fill: green;");
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("PDF Generado");
+            alert.setHeaderText("Reporte exportado exitosamente");
+            alert.setContentText("Archivo: " + pdf.getAbsolutePath());
+            alert.showAndWait();
+        } else {
+            lblMensaje.setText("✗ Error al generar el PDF");
+            lblMensaje.setStyle("-fx-text-fill: red;");
+        }
+    }
+
+    @FXML
     private void limpiarCampos() {
         txtSku.clear();
         txtNombre.clear();
@@ -252,7 +275,6 @@ public class ProductoController implements Initializable {
         txtStock.setText(String.valueOf(producto.getStockProducto()));
         cmbEstado.setValue(producto.getEstadoProducto());
 
-        // Buscar y seleccionar en comboboxes
         for (Categoria c : cmbCategoria.getItems()) {
             if (c.getIdCategoria() == producto.getIdCategoria()) {
                 cmbCategoria.setValue(c);
