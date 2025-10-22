@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controller.ProductoController" spacing="10" style="-fx-padding: 20;">
+
+    <Label text="Gestión de Productos" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+    <Separator/>
+
+    <!-- Formulario de Producto -->
+    <GridPane hgap="10" vgap="10">
+        <Label text="SKU:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtSku" GridPane.columnIndex="1" GridPane.rowIndex="0" promptText="Ej: PROD-001"/>
+
+        <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="txtNombre" GridPane.columnIndex="1" GridPane.rowIndex="1" promptText="Nombre del producto"/>
+
+        <Label text="Descripción:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="txtDescripcion" GridPane.columnIndex="1" GridPane.rowIndex="2" promptText="Descripción"/>
+
+        <Label text="Costo Unitario:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="txtCosto" GridPane.columnIndex="1" GridPane.rowIndex="3" promptText="0.00"/>
+
+        <Label text="Descuento:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="txtDescuento" GridPane.columnIndex="1" GridPane.rowIndex="4" promptText="0.00"/>
+
+        <Label text="Imagen URL:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="txtImagenURL" GridPane.columnIndex="1" GridPane.rowIndex="5" promptText="URL de imagen"/>
+
+        <Label text="Estado:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <ComboBox fx:id="cmbEstado" GridPane.columnIndex="1" GridPane.rowIndex="6" prefWidth="200"/>
+
+        <Label text="Stock:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+        <TextField fx:id="txtStock" GridPane.columnIndex="1" GridPane.rowIndex="7" promptText="0"/>
+
+        <Label text="Categoría:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="cmbCategoria" GridPane.columnIndex="3" GridPane.rowIndex="0" prefWidth="200"/>
+
+        <Label text="Tipo Producto:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <ComboBox fx:id="cmbTipoProducto" GridPane.columnIndex="3" GridPane.rowIndex="1" prefWidth="200"/>
+
+        <Label text="Unidad Medida:" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+        <ComboBox fx:id="cmbUnidadMedida" GridPane.columnIndex="3" GridPane.rowIndex="2" prefWidth="200"/>
+    </GridPane>
+
+    <!-- Botones de acción -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="btnNuevo" text="Nuevo" onAction="#nuevoProducto" prefWidth="100"/>
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardarProducto" prefWidth="100"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+        <Button fx:id="btnActualizar" text="Actualizar" onAction="#actualizarProducto" prefWidth="100"
+                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+        <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarProducto" prefWidth="100"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button fx:id="btnLimpiar" text="Limpiar" onAction="#limpiarCampos" prefWidth="100"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Búsqueda -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Buscar:"/>
+        <TextField fx:id="txtBuscar" promptText="Buscar por nombre..." prefWidth="300"/>
+        <Button text="🔍 Buscar" onAction="#buscarProductos"/>
+        <Button text="↻ Actualizar Tabla" onAction="#cargarProductos"/>
+    </HBox>
+
+    <!-- Tabla de productos -->
+    <TableView fx:id="tblProductos" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colSku" text="SKU" prefWidth="100"/>
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="200"/>
+            <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="200"/>
+            <TableColumn fx:id="colCosto" text="Costo" prefWidth="80"/>
+            <TableColumn fx:id="colDescuento" text="Descuento" prefWidth="80"/>
+            <TableColumn fx:id="colEstado" text="Estado" prefWidth="100"/>
+            <TableColumn fx:id="colStock" text="Stock" prefWidth="70"/>
+        </columns>
+    </TableView>
+
+    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold;"/>
+
+</VBox>
