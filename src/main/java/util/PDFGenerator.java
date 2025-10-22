@@ -138,7 +138,7 @@ public class PDFGenerator {
                     .setPadding(8);
             tabla.addHeaderCell(headerCell);
         }
-
+//saber
         // Agregar filas de datos
         ObservableList<?> items = tableView.getItems();
         boolean filaAlterna = false;
