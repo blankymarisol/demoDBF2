@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controller.TipoProductoController" spacing="10" style="-fx-padding: 20;">
+
+    <Label text="Gestión de Tipos de Producto" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+    <Separator/>
+
+    <!-- Formulario -->
+    <GridPane hgap="10" vgap="10">
+        <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtNombre" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   promptText="Nombre del tipo de producto" prefWidth="300"/>
+    </GridPane>
+
+    <!-- Botones de acción -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Nuevo" onAction="#nuevo" prefWidth="100"/>
+        <Button text="Guardar" onAction="#guardar" prefWidth="100"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+        <Button text="Actualizar" onAction="#actualizar" prefWidth="100"
+                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+        <Button text="Eliminar" onAction="#eliminar" prefWidth="100"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button text="Limpiar" onAction="#limpiarCampos" prefWidth="100"/>
+    </HBox>
+
+    <Separator/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button text="↻ Actualizar Tabla" onAction="#cargar"/>
+    </HBox>
+
+    <!-- Tabla -->
+    <TableView fx:id="tblTipos" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="100"/>
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="600"/>
+        </columns>
+    </TableView>
+
+    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold;"/>
+
+</VBox>

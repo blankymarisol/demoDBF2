@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controller.BodegaController" spacing="10" style="-fx-padding: 20;">
+
+    <Label text="Gestión de Bodegas" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+    <Separator/>
+
+    <!-- Formulario de Bodega -->
+    <GridPane hgap="10" vgap="10">
+        <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtNombre" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   promptText="Nombre de la bodega" prefWidth="300"/>
+
+        <Label text="Ubicación:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="txtUbicacion" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                   promptText="Dirección completa"/>
+
+        <Label text="Descripción:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="txtDescripcion" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                   promptText="Descripción"/>
+
+        <Label text="Teléfono:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="txtTelefono" GridPane.columnIndex="1" GridPane.rowIndex="3"
+                   promptText="12345678"/>
+
+        <Label text="Capacidad:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="txtCapacidad" GridPane.columnIndex="1" GridPane.rowIndex="4"
+                   promptText="0"/>
+
+        <Label text="Municipio ID:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="txtMunicipioId" GridPane.columnIndex="1" GridPane.rowIndex="5"
+                   promptText="ID del municipio"/>
+    </GridPane>
+
+    <!-- Botones de acción -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="btnNuevo" text="Nuevo" onAction="#nuevaBodega" prefWidth="100"/>
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardarBodega" prefWidth="100"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+        <Button fx:id="btnActualizar" text="Actualizar" onAction="#actualizarBodega" prefWidth="100"
+                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+        <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarBodega" prefWidth="100"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button fx:id="btnLimpiar" text="Limpiar" onAction="#limpiarCampos" prefWidth="100"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Búsqueda -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button text="↻ Actualizar Tabla" onAction="#cargarBodegas"/>
+    </HBox>
+
+    <!-- Tabla de bodegas -->
+    <TableView fx:id="tblBodegas" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="150"/>
+            <TableColumn fx:id="colUbicacion" text="Ubicación" prefWidth="200"/>
+            <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="200"/>
+            <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="100"/>
+            <TableColumn fx:id="colCapacidad" text="Capacidad" prefWidth="100"/>
+            <TableColumn fx:id="colMunicipio" text="Municipio" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold;"/>
+
+</VBox>

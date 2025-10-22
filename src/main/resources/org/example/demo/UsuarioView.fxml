@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controller.UsuarioController" spacing="10" style="-fx-padding: 20;">
+
+    <Label text="Gestión de Usuarios" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+    <Separator/>
+
+    <!-- Formulario de Usuario -->
+    <GridPane hgap="10" vgap="10">
+        <Label text="Nombre Usuario:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtNombreUsuario" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   promptText="Nombre de usuario" prefWidth="300"/>
+
+        <Label text="Rol:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <ComboBox fx:id="cmbRol" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
+
+        <Label text="Correo:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="txtCorreo" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                   promptText="correo@ejemplo.com"/>
+
+        <Label text="Contraseña:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <PasswordField fx:id="txtContrasena" GridPane.columnIndex="1" GridPane.rowIndex="3"
+                       promptText="Contraseña"/>
+    </GridPane>
+
+    <!-- Botones de acción -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="btnNuevo" text="Nuevo" onAction="#nuevoUsuario" prefWidth="100"/>
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardarUsuario" prefWidth="100"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+        <Button fx:id="btnActualizar" text="Actualizar" onAction="#actualizarUsuario" prefWidth="100"
+                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+        <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarUsuario" prefWidth="100"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button fx:id="btnLimpiar" text="Limpiar" onAction="#limpiarCampos" prefWidth="100"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Búsqueda -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Filtrar por rol:"/>
+        <ComboBox fx:id="cmbFiltroRol" prefWidth="200"/>
+        <Button text="🔍 Filtrar" onAction="#filtrarPorRol"/>
+        <Button text="↻ Mostrar Todos" onAction="#cargarUsuarios"/>
+    </HBox>
+
+    <!-- Tabla de usuarios -->
+    <TableView fx:id="tblUsuarios" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colNombreUsuario" text="Usuario" prefWidth="200"/>
+            <TableColumn fx:id="colRol" text="Rol" prefWidth="150"/>
+            <TableColumn fx:id="colCorreo" text="Correo" prefWidth="250"/>
+        </columns>
+    </TableView>
+
+    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold;"/>
+
+</VBox>

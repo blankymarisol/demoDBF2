@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controller.CategoriaController" spacing="10" style="-fx-padding: 20;">
+
+    <Label text="Gestión de Categorías" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+    <Separator/>
+
+    <!-- Formulario de Categoria -->
+    <GridPane hgap="10" vgap="10">
+        <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtNombre" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   promptText="Nombre de la categoría" prefWidth="300"/>
+
+        <Label text="Descripción:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextArea fx:id="txtDescripcion" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                  promptText="Descripción de la categoría" prefWidth="300" prefHeight="80"/>
+    </GridPane>
+
+    <!-- Botones de acción -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="btnNuevo" text="Nuevo" onAction="#nuevaCategoria" prefWidth="100"/>
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardarCategoria" prefWidth="100"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+        <Button fx:id="btnActualizar" text="Actualizar" onAction="#actualizarCategoria" prefWidth="100"
+                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+        <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarCategoria" prefWidth="100"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button fx:id="btnLimpiar" text="Limpiar" onAction="#limpiarCampos" prefWidth="100"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Búsqueda -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button text="↻ Actualizar Tabla" onAction="#cargarCategorias"/>
+    </HBox>
+
+    <!-- Tabla de categorias -->
+    <TableView fx:id="tblCategorias" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="250"/>
+            <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="450"/>
+        </columns>
+    </TableView>
+
+    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold;"/>
+
+</VBox>

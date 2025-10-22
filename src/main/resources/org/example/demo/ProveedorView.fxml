@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controller.ProveedorController" spacing="10" style="-fx-padding: 20;">
+
+    <Label text="Gestión de Proveedores" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+    <Separator/>
+
+    <!-- Formulario de Proveedor -->
+    <GridPane hgap="10" vgap="10">
+        <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtNombre" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   promptText="Nombre del proveedor" prefWidth="300"/>
+
+        <Label text="Teléfono:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="txtTelefono" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                   promptText="12345678"/>
+
+        <Label text="Correo:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="txtCorreo" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                   promptText="correo@ejemplo.com"/>
+
+        <Label text="Dirección:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="txtDireccion" GridPane.columnIndex="1" GridPane.rowIndex="3"
+                   promptText="Dirección completa"/>
+
+        <Label text="NIT:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="txtNIT" GridPane.columnIndex="1" GridPane.rowIndex="4"
+                   promptText="1234567-8"/>
+    </GridPane>
+
+    <!-- Botones de acción -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="btnNuevo" text="Nuevo" onAction="#nuevoProveedor" prefWidth="100"/>
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardarProveedor" prefWidth="100"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+        <Button fx:id="btnActualizar" text="Actualizar" onAction="#actualizarProveedor" prefWidth="100"
+                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+        <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarProveedor" prefWidth="100"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button fx:id="btnLimpiar" text="Limpiar" onAction="#limpiarCampos" prefWidth="100"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Búsqueda -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Buscar:"/>
+        <TextField fx:id="txtBuscar" promptText="Buscar por nombre..." prefWidth="300"/>
+        <Button text="🔍 Buscar" onAction="#buscarProveedores"/>
+        <Button text="↻ Actualizar Tabla" onAction="#cargarProveedores"/>
+    </HBox>
+
+    <!-- Tabla de proveedores -->
+    <TableView fx:id="tblProveedores" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="200"/>
+            <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="100"/>
+            <TableColumn fx:id="colCorreo" text="Correo" prefWidth="200"/>
+            <TableColumn fx:id="colDireccion" text="Dirección" prefWidth="250"/>
+            <TableColumn fx:id="colNIT" text="NIT" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold;"/>
+
+</VBox>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controller.InventarioController" spacing="10" style="-fx-padding: 20;">
+
+    <Label text="Gestión de Inventarios" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+    <Separator/>
+
+    <!-- Formulario de Inventario -->
+    <GridPane hgap="10" vgap="10">
+        <Label text="Cantidad:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtCantidad" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   promptText="0" prefWidth="200"/>
+
+        <Label text="Precio Venta:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="txtPrecioVenta" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                   promptText="0.00"/>
+
+        <Label text="Bodega:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <ComboBox fx:id="cmbBodega" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="250"/>
+
+        <Label text="Producto:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <ComboBox fx:id="cmbProducto" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="250"/>
+    </GridPane>
+
+    <!-- Botones de acción -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="btnNuevo" text="Nuevo" onAction="#nuevoInventario" prefWidth="100"/>
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardarInventario" prefWidth="100"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+        <Button fx:id="btnActualizar" text="Actualizar" onAction="#actualizarInventario" prefWidth="100"
+                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+        <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarInventario" prefWidth="100"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button fx:id="btnLimpiar" text="Limpiar" onAction="#limpiarCampos" prefWidth="100"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Filtros -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Filtrar por Bodega:"/>
+        <ComboBox fx:id="cmbFiltroBodega" prefWidth="200"/>
+        <Button text="🔍 Filtrar" onAction="#filtrarPorBodega"/>
+        <Button text="📊 Stock Bajo" onAction="#mostrarStockBajo"/>
+        <Button text="↻ Todos" onAction="#cargarInventarios"/>
+    </HBox>
+
+    <!-- Tabla de inventarios -->
+    <TableView fx:id="tblInventarios" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colCantidad" text="Cantidad" prefWidth="100"/>
+            <TableColumn fx:id="colPrecioVenta" text="Precio Venta" prefWidth="100"/>
+            <TableColumn fx:id="colFecha" text="Última Actualización" prefWidth="180"/>
+            <TableColumn fx:id="colBodega" text="ID Bodega" prefWidth="100"/>
+            <TableColumn fx:id="colProducto" text="ID Producto" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold;"/>
+
+</VBox>
