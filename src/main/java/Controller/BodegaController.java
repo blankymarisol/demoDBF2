@@ -8,7 +8,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Bodega;
+import util.PDFGenerator;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -136,6 +138,32 @@ public class BodegaController implements Initializable {
                 lblMensaje.setText("✗ Error al eliminar la bodega");
                 lblMensaje.setStyle("-fx-text-fill: red;");
             }
+        }
+    }
+
+    @FXML
+    private void exportarPDF() {
+        if (tblBodegas.getItems().isEmpty()) {
+            lblMensaje.setText("✗ No hay datos para exportar");
+            lblMensaje.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        String nombreArchivo = PDFGenerator.generarNombreArchivo("Reporte_Bodegas");
+        File pdf = PDFGenerator.generarPDF(tblBodegas, "Reporte de Bodegas", nombreArchivo);
+
+        if (pdf != null) {
+            lblMensaje.setText("✓ PDF generado exitosamente: " + pdf.getName());
+            lblMensaje.setStyle("-fx-text-fill: green;");
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("PDF Generado");
+            alert.setHeaderText("Reporte exportado exitosamente");
+            alert.setContentText("Archivo: " + pdf.getAbsolutePath());
+            alert.showAndWait();
+        } else {
+            lblMensaje.setText("✗ Error al generar el PDF");
+            lblMensaje.setStyle("-fx-text-fill: red;");
         }
     }
 

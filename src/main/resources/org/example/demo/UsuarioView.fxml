@@ -42,12 +42,15 @@
 
     <Separator/>
 
-    <!-- Búsqueda -->
+    <!-- Búsqueda y Exportar PDF -->
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Filtrar por rol:"/>
         <ComboBox fx:id="cmbFiltroRol" prefWidth="200"/>
         <Button text="🔍 Filtrar" onAction="#filtrarPorRol"/>
         <Button text="↻ Mostrar Todos" onAction="#cargarUsuarios"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="📄 Exportar PDF" onAction="#exportarPDF"
+                style="-fx-background-color: #e67e22; -fx-text-fill: white;" prefWidth="130"/>
     </HBox>
 
     <!-- Tabla de usuarios -->

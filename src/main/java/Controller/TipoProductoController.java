@@ -7,7 +7,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.TipoProducto;
+import util.PDFGenerator;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -104,6 +106,32 @@ public class TipoProductoController implements Initializable {
                 cargar();
                 limpiarCampos();
             }
+        }
+    }
+
+    @FXML
+    private void exportarPDF() {
+        if (tblTipos.getItems().isEmpty()) {
+            lblMensaje.setText("✗ No hay datos para exportar");
+            lblMensaje.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        String nombreArchivo = PDFGenerator.generarNombreArchivo("Reporte_TipoProductos");
+        File pdf = PDFGenerator.generarPDF(tblTipos, "Reporte de Tipos de Producto", nombreArchivo);
+
+        if (pdf != null) {
+            lblMensaje.setText("✓ PDF generado exitosamente: " + pdf.getName());
+            lblMensaje.setStyle("-fx-text-fill: green;");
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("PDF Generado");
+            alert.setHeaderText("Reporte exportado exitosamente");
+            alert.setContentText("Archivo: " + pdf.getAbsolutePath());
+            alert.showAndWait();
+        } else {
+            lblMensaje.setText("✗ Error al generar el PDF");
+            lblMensaje.setStyle("-fx-text-fill: red;");
         }
     }
 

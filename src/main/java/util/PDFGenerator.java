@@ -38,8 +38,9 @@ public class PDFGenerator {
      */
     public static <T> File generarPDF(TableView<T> tableView, String titulo, String nombreArchivo) {
         try {
-            // Crear el archivo PDF en el directorio de outputs
-            String rutaCompleta = "/mnt/user-data/outputs/" + nombreArchivo + ".pdf";
+            // Crear el archivo PDF en la carpeta de Descargas del usuario
+            String carpetaDescargas = System.getProperty("user.home") + "/Downloads/";
+            String rutaCompleta = carpetaDescargas + nombreArchivo + ".pdf";
             File archivoPdf = new File(rutaCompleta);
             archivoPdf.getParentFile().mkdirs(); // Crear directorio si no existe
 

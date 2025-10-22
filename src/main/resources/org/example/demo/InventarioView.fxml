@@ -41,13 +41,16 @@
 
     <Separator/>
 
-    <!-- Filtros -->
+    <!-- Filtros y Exportar PDF -->
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Filtrar por Bodega:"/>
         <ComboBox fx:id="cmbFiltroBodega" prefWidth="200"/>
         <Button text="🔍 Filtrar" onAction="#filtrarPorBodega"/>
         <Button text="📊 Stock Bajo" onAction="#mostrarStockBajo"/>
         <Button text="↻ Todos" onAction="#cargarInventarios"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="📄 Exportar PDF" onAction="#exportarPDF"
+                style="-fx-background-color: #e67e22; -fx-text-fill: white;" prefWidth="130"/>
     </HBox>
 
     <!-- Tabla de inventarios -->

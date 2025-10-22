@@ -8,7 +8,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.*;
+import util.PDFGenerator;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -55,7 +57,6 @@ public class InventarioController implements Initializable {
     }
 
     private void cargarComboBoxes() {
-        // Bodegas
         List<Bodega> bodegas = bodegaDAO.obtenerTodas();
         cmbBodega.setItems(FXCollections.observableArrayList(bodegas));
         cmbFiltroBodega.setItems(FXCollections.observableArrayList(bodegas));
@@ -82,7 +83,6 @@ public class InventarioController implements Initializable {
             }
         });
 
-        // Productos
         List<Producto> productos = productoDAO.obtenerTodos();
         cmbProducto.setItems(FXCollections.observableArrayList(productos));
         cmbProducto.setConverter(new javafx.util.StringConverter<Producto>() {
@@ -216,6 +216,32 @@ public class InventarioController implements Initializable {
                 lblMensaje.setText("✗ Error al eliminar el inventario");
                 lblMensaje.setStyle("-fx-text-fill: red;");
             }
+        }
+    }
+
+    @FXML
+    private void exportarPDF() {
+        if (tblInventarios.getItems().isEmpty()) {
+            lblMensaje.setText("✗ No hay datos para exportar");
+            lblMensaje.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        String nombreArchivo = PDFGenerator.generarNombreArchivo("Reporte_Inventarios");
+        File pdf = PDFGenerator.generarPDF(tblInventarios, "Reporte de Inventarios", nombreArchivo);
+
+        if (pdf != null) {
+            lblMensaje.setText("✓ PDF generado exitosamente: " + pdf.getName());
+            lblMensaje.setStyle("-fx-text-fill: green;");
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("PDF Generado");
+            alert.setHeaderText("Reporte exportado exitosamente");
+            alert.setContentText("Archivo: " + pdf.getAbsolutePath());
+            alert.showAndWait();
+        } else {
+            lblMensaje.setText("✗ Error al generar el PDF");
+            lblMensaje.setStyle("-fx-text-fill: red;");
         }
     }
 
