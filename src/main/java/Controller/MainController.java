@@ -45,47 +45,47 @@ public class MainController implements Initializable {
 
     @FXML
     private void abrirProductos() {
-        cargarVista("/fxml/Producto.fxml", "Gestión de Productos");
+        cargarVista("/org/example/demo/ProductoView.fxml", "Gestión de Productos");
     }
 
     @FXML
     private void abrirProveedores() {
-        cargarVista("/fxml/Proveedor.fxml", "Gestión de Proveedores");
+        cargarVista("/org/example/demo/ProveedorView.fxml", "Gestión de Proveedores");
     }
 
     @FXML
     private void abrirUsuarios() {
-        cargarVista("/fxml/Usuario.fxml", "Gestión de Usuarios");
+        cargarVista("/org/example/demo/UsuarioView.fxml", "Gestión de Usuarios");
     }
 
     @FXML
     private void abrirInventarios() {
-        cargarVista("/fxml/Inventario.fxml", "Gestión de Inventarios");
+        cargarVista("/org/example/demo/InventarioView.fxml", "Gestión de Inventarios");
     }
 
     @FXML
     private void abrirCompras() {
-        cargarVista("/fxml/Compra.fxml", "Gestión de Compras");
+        cargarVista("/org/example/demo/CompraView.fxml", "Gestión de Compras");
     }
 
     @FXML
     private void abrirBodegas() {
-        cargarVista("/fxml/Bodega.fxml", "Gestión de Bodegas");
+        cargarVista("/org/example/demo/BodegaView.fxml", "Gestión de Bodegas");
     }
 
     @FXML
     private void abrirCategorias() {
-        cargarVista("/fxml/Categoria.fxml", "Gestión de Categorías");
+        cargarVista("/org/example/demo/CategoriaView.fxml", "Gestión de Categorías");
     }
 
     @FXML
     private void abrirTipoProductos() {
-        cargarVista("/fxml/TipoProducto.fxml", "Gestión de Tipos de Producto");
+        cargarVista("/org/example/demo/TipoProductoView.fxml", "Gestión de Tipos de Producto");
     }
 
     @FXML
     private void abrirUnidadMedidas() {
-        cargarVista("/fxml/UnidadMedida.fxml", "Gestión de Unidades de Medida");
+        cargarVista("/org/example/demo/UnidadMedidaView.fxml", "Gestión de Unidades de Medida");
     }
 
     private void cargarVista(String fxmlPath, String titulo) {

@@ -10,7 +10,13 @@ public class Launcher extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/ProductoView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/MainView.fxml"));
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/BodegaView.fxml"));
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/InventarioView.fxml"));
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/UnidadMedidaView.fxml"));
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/.fxml"));
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/.fxml"));
+
         Scene scene = new Scene(loader.load());
         primaryStage.setTitle("Gestión de Productos");
         primaryStage.setScene(scene);
