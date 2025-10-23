@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.*;
 import util.PDFGenerator;
+import util.PermissionHelper;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -29,18 +30,25 @@ public class InventarioController implements Initializable {
     @FXML private TableColumn<Inventario, Timestamp> colFecha;
     @FXML private Label lblMensaje;
 
+    // Botones
+    @FXML private Button btnNuevo, btnGuardar, btnActualizar, btnEliminar, btnLimpiar;
+
     private InventarioDAO inventarioDAO = new InventarioDAO();
     private BodegaDAO bodegaDAO = new BodegaDAO();
     private ProductoDAO productoDAO = new ProductoDAO();
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
     private MovimientoInventarioDAO movimientoDAO = new MovimientoInventarioDAO();
     private Inventario inventarioSeleccionado;
+    private LoginSession session = LoginSession.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configurarTabla();
         cargarComboBoxes();
         cargarInventarios();
+
+        // ========== APLICAR PERMISOS ==========
+        aplicarPermisos();
 
         tblInventarios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -56,6 +64,32 @@ public class InventarioController implements Initializable {
                 txtPrecioVenta.setText(newValue.getCostoUnitarioProducto().toString());
             }
         });
+    }
+
+    /**
+     * MÉTODO CRÍTICO: Aplica los permisos según el rol del usuario
+     */
+    private void aplicarPermisos() {
+        System.out.println("\n[INVENTARIOS] Aplicando permisos para: " + session.getRolActual());
+
+        // Botones de acción
+        btnGuardar.setDisable(!session.puedeGestionarInventarios());
+        btnActualizar.setDisable(!session.puedeGestionarInventarios());
+        btnEliminar.setDisable(!session.puedeGestionarInventarios());
+
+        // Campos de formulario (solo lectura si no puede editar)
+        boolean puedeEditar = session.puedeGestionarInventarios();
+        txtCantidad.setEditable(puedeEditar);
+        txtPrecioVenta.setEditable(false); // Siempre readonly porque se carga automáticamente
+        txtObservacion.setEditable(puedeEditar);
+        txtReferencia.setEditable(puedeEditar);
+        cmbBodega.setDisable(!puedeEditar);
+        cmbProducto.setDisable(!puedeEditar);
+        cmbUsuario.setDisable(!puedeEditar);
+
+        System.out.println("  - Guardar: " + (btnGuardar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Actualizar: " + (btnActualizar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Eliminar: " + (btnEliminar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
     }
 
     private void configurarTabla() {
@@ -175,6 +209,12 @@ public class InventarioController implements Initializable {
 
     @FXML
     private void guardarInventario() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarInventarios()) {
+            PermissionHelper.mostrarErrorPermiso("agregar inventarios");
+            return;
+        }
+
         if (!validarCampos()) return;
 
         try {
@@ -250,6 +290,12 @@ public class InventarioController implements Initializable {
 
     @FXML
     private void actualizarInventario() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarInventarios()) {
+            PermissionHelper.mostrarErrorPermiso("actualizar inventarios");
+            return;
+        }
+
         if (inventarioSeleccionado == null) {
             lblMensaje.setText("✗ Seleccione un inventario de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -290,6 +336,12 @@ public class InventarioController implements Initializable {
 
     @FXML
     private void eliminarInventario() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarInventarios()) {
+            PermissionHelper.mostrarErrorPermiso("eliminar inventarios");
+            return;
+        }
+
         if (inventarioSeleccionado == null) {
             lblMensaje.setText("✗ Seleccione un inventario de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");
