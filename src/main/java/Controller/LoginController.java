@@ -1,6 +1,7 @@
 package Controller;
 
 import dao.UsuarioDAO;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -77,6 +78,9 @@ public class LoginController implements Initializable {
             return;
         }
 
+        // Deshabilitar el botón mientras se procesa
+        btnLogin.setDisable(true);
+
         try {
             // Intentar autenticar
             Usuario usuario = usuarioDAO.login(correo, contrasena);
@@ -87,35 +91,31 @@ public class LoginController implements Initializable {
 
                 mostrarExito("¡Bienvenido " + usuario.getNombreUsuario() + "!");
 
-                // Pequeña pausa para que el usuario vea el mensaje
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(800);
-                        javafx.application.Platform.runLater(this::abrirVentanaPrincipal);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+                // Abrir ventana principal en el hilo de JavaFX
+                Platform.runLater(() -> abrirVentanaPrincipal());
 
             } else {
                 mostrarError("Credenciales incorrectas");
                 limpiarCampos();
+                btnLogin.setDisable(false);
             }
 
         } catch (Exception e) {
             mostrarError("Error al iniciar sesión: " + e.getMessage());
             e.printStackTrace();
+            btnLogin.setDisable(false);
         }
     }
 
     private void abrirVentanaPrincipal() {
         try {
+            System.out.println("Iniciando apertura de ventana principal...");
+
             // Cargar la ventana principal
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/demo/MainView.fxml"));
             Parent root = loader.load();
 
-            // Obtener el stage actual y cerrarlo
-            Stage loginStage = (Stage) btnLogin.getScene().getWindow();
+            System.out.println("Vista cargada correctamente");
 
             // Crear y mostrar la ventana principal
             Stage mainStage = new Stage();
@@ -129,12 +129,20 @@ public class LoginController implements Initializable {
                 config.DatabaseConnection.closeConnection();
             });
 
+            System.out.println("Mostrando ventana principal...");
             mainStage.show();
+
+            // Obtener el stage actual (login) y cerrarlo
+            Stage loginStage = (Stage) btnLogin.getScene().getWindow();
             loginStage.close();
 
+            System.out.println("Ventana de login cerrada");
+
         } catch (Exception e) {
-            mostrarError("Error al abrir ventana principal: " + e.getMessage());
+            System.err.println("Error detallado al abrir ventana principal:");
             e.printStackTrace();
+            mostrarError("Error al abrir ventana principal: " + e.getMessage());
+            btnLogin.setDisable(false);
         }
     }
 
