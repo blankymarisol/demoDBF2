@@ -69,40 +69,34 @@ public class CompraController implements Initializable {
         cargarComboBoxes();
         cargarCompras();
 
-        // Listener para selección de compra
         tblCompras.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 compraSeleccionada = newSelection;
             }
         });
 
-        // Listener para cargar automáticamente el precio cuando se selecciona un producto
         cmbProducto.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 txtPrecioUnitario.setText(newValue.getCostoUnitarioProducto().toString());
             }
         });
 
-        // Configurar tabla de detalles
         tblDetalles.setItems(detallesCompraActual);
     }
 
     private void configurarTablas() {
-        // Configurar tabla de compras
         colId.setCellValueFactory(new PropertyValueFactory<>("idCompra"));
         colFecha.setCellValueFactory(new PropertyValueFactory<>("fechaCompra"));
         colTotal.setCellValueFactory(new PropertyValueFactory<>("totalCompra"));
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estadoCompra"));
         colProveedor.setCellValueFactory(new PropertyValueFactory<>("idProveedor"));
 
-        // Columna personalizada para mostrar nombre del proveedor
         colNombreProveedor.setCellValueFactory(cellData -> {
             int idProveedor = cellData.getValue().getIdProveedor();
             Proveedor proveedor = proveedorDAO.obtenerPorId(idProveedor);
             return new SimpleStringProperty(proveedor != null ? proveedor.getNombreProveedor() : "N/A");
         });
 
-        // Configurar tabla de detalles
         colProducto.setCellValueFactory(cellData -> {
             int idProducto = cellData.getValue().getIdProducto();
             Producto producto = productoDAO.obtenerPorId(idProducto);
@@ -111,7 +105,6 @@ public class CompraController implements Initializable {
         colCantidadDetalle.setCellValueFactory(new PropertyValueFactory<>("cantidadDetalle"));
         colPrecioDetalle.setCellValueFactory(new PropertyValueFactory<>("precioUnitarioDetalle"));
 
-        // Columna calculada para subtotal
         colSubtotal.setCellValueFactory(cellData -> {
             CompraDetalle detalle = cellData.getValue();
             BigDecimal subtotal = detalle.getPrecioUnitarioDetalle()
@@ -121,7 +114,6 @@ public class CompraController implements Initializable {
     }
 
     private void cargarComboBoxes() {
-        // Cargar proveedores
         List<Proveedor> proveedores = proveedorDAO.obtenerTodos();
         cmbProveedor.setItems(FXCollections.observableArrayList(proveedores));
         cmbProveedor.setConverter(new javafx.util.StringConverter<Proveedor>() {
@@ -135,7 +127,6 @@ public class CompraController implements Initializable {
             }
         });
 
-        // Cargar usuarios
         List<Usuario> usuarios = usuarioDAO.obtenerTodos();
         cmbUsuario.setItems(FXCollections.observableArrayList(usuarios));
         cmbUsuario.setConverter(new javafx.util.StringConverter<Usuario>() {
@@ -149,7 +140,6 @@ public class CompraController implements Initializable {
             }
         });
 
-        // Cargar bodegas
         List<Bodega> bodegas = bodegaDAO.obtenerTodas();
         cmbBodega.setItems(FXCollections.observableArrayList(bodegas));
         cmbBodega.setConverter(new javafx.util.StringConverter<Bodega>() {
@@ -163,7 +153,6 @@ public class CompraController implements Initializable {
             }
         });
 
-        // Cargar productos
         List<Producto> productos = productoDAO.obtenerTodos();
         cmbProducto.setItems(FXCollections.observableArrayList(productos));
         cmbProducto.setConverter(new javafx.util.StringConverter<Producto>() {
@@ -177,7 +166,6 @@ public class CompraController implements Initializable {
             }
         });
 
-        // Cargar estados
         ObservableList<String> estados = FXCollections.observableArrayList(
                 "PENDIENTE", "COMPLETADA", "CANCELADA", "EN_PROCESO"
         );
@@ -192,8 +180,7 @@ public class CompraController implements Initializable {
             List<Compra> compras = compraDAO.obtenerTodas();
             ObservableList<Compra> data = FXCollections.observableArrayList(compras);
             tblCompras.setItems(data);
-            lblMensaje.setText("Compras cargadas: " + compras.size());
-            lblMensaje.setStyle("-fx-text-fill: blue;");
+            mostrarMensaje("Compras cargadas: " + compras.size(), "blue");
         } catch (Exception e) {
             mostrarMensaje("✗ Error al cargar compras: " + e.getMessage(), "red");
             e.printStackTrace();
@@ -209,7 +196,7 @@ public class CompraController implements Initializable {
             List<Compra> compras = compraDAO.obtenerPorEstado(estado);
             ObservableList<Compra> data = FXCollections.observableArrayList(compras);
             tblCompras.setItems(data);
-            lblMensaje.setText("Compras encontradas: " + compras.size());
+            mostrarMensaje("Compras encontradas: " + compras.size(), "blue");
         }
     }
 
@@ -224,12 +211,11 @@ public class CompraController implements Initializable {
         List<Compra> compras = compraDAO.obtenerPorProveedor(proveedor.getIdProveedor());
         ObservableList<Compra> data = FXCollections.observableArrayList(compras);
         tblCompras.setItems(data);
-        lblMensaje.setText("Compras del proveedor: " + compras.size());
+        mostrarMensaje("Compras del proveedor: " + compras.size(), "blue");
     }
 
     @FXML
     private void filtrarPorFechas() {
-        // Crear diálogo para seleccionar rango de fechas
         Dialog<LocalDate[]> dialog = new Dialog<>();
         dialog.setTitle("Filtrar por Fechas");
         dialog.setHeaderText("Seleccione el rango de fechas");
@@ -266,7 +252,7 @@ public class CompraController implements Initializable {
             List<Compra> compras = compraDAO.obtenerPorFechas(fechaInicio, fechaFin);
             ObservableList<Compra> data = FXCollections.observableArrayList(compras);
             tblCompras.setItems(data);
-            lblMensaje.setText("Compras encontradas: " + compras.size());
+            mostrarMensaje("Compras encontradas: " + compras.size(), "blue");
         });
     }
 
@@ -277,7 +263,7 @@ public class CompraController implements Initializable {
         detallesCompraActual.clear();
         dpFechaCompra.setValue(LocalDate.now());
         cmbEstado.setValue("PENDIENTE");
-        lblMensaje.setText("Nueva compra - agregue productos y complete los campos");
+        mostrarMensaje("Nueva compra - agregue productos y complete los campos", "blue");
     }
 
     @FXML
@@ -288,18 +274,15 @@ public class CompraController implements Initializable {
         int cantidad = Integer.parseInt(txtCantidad.getText().trim());
         BigDecimal precioUnitario = new BigDecimal(txtPrecioUnitario.getText().trim());
 
-        // Verificar si el producto ya está en la lista
         Optional<CompraDetalle> detalleExistente = detallesCompraActual.stream()
                 .filter(d -> d.getIdProducto() == producto.getIdProducto())
                 .findFirst();
 
         if (detalleExistente.isPresent()) {
-            // Actualizar cantidad si ya existe
             CompraDetalle detalle = detalleExistente.get();
             detalle.setCantidadDetalle(detalle.getCantidadDetalle() + cantidad);
             tblDetalles.refresh();
         } else {
-            // Agregar nuevo detalle
             CompraDetalle detalle = new CompraDetalle();
             detalle.setIdProducto(producto.getIdProducto());
             detalle.setCantidadDetalle(cantidad);
@@ -337,191 +320,218 @@ public class CompraController implements Initializable {
 
     @FXML
     private void guardarCompra() {
-        System.out.println("=== INICIANDO GUARDADO DE COMPRA ===");
+        System.out.println("\n═══════════════════════════════════════════════════════");
+        System.out.println("    INICIANDO PROCESO DE GUARDADO DE COMPRA (SALIDA)");
+        System.out.println("═══════════════════════════════════════════════════════\n");
 
+        // ===== VALIDACIONES INICIALES =====
         if (!validarCamposCompra()) {
-            System.out.println("✗ Validación de campos falló");
+            System.out.println("❌ Validación de campos falló");
             return;
         }
 
         if (detallesCompraActual.isEmpty()) {
             mostrarMensaje("✗ Debe agregar al menos un producto a la compra", "red");
-            System.out.println("✗ No hay productos en la compra");
+            System.out.println("❌ No hay productos en la compra");
             return;
         }
 
         if (cmbBodega.getValue() == null) {
             mostrarMensaje("✗ Debe seleccionar una bodega", "red");
-            System.out.println("✗ No hay bodega seleccionada");
+            System.out.println("❌ No hay bodega seleccionada");
             return;
         }
 
         if (cmbUsuario.getValue() == null) {
             mostrarMensaje("✗ Debe seleccionar un usuario", "red");
-            System.out.println("✗ No hay usuario seleccionado");
+            System.out.println("❌ No hay usuario seleccionado");
             return;
         }
 
         try {
-            // Validar que hay suficiente stock antes de procesar
             int idBodega = cmbBodega.getValue().getIdBodega();
-            System.out.println("Bodega seleccionada ID: " + idBodega);
+            int idUsuario = cmbUsuario.getValue().getIdUsuario();
 
+            System.out.println("📋 Datos principales:");
+            System.out.println("   • Bodega ID: " + idBodega);
+            System.out.println("   • Usuario ID: " + idUsuario);
+            System.out.println("   • Productos a procesar: " + detallesCompraActual.size());
+
+            // ===== VERIFICACIÓN DE STOCK =====
+            System.out.println("\n🔍 PASO 1: Verificando stock disponible...");
             List<String> productosInsuficientes = new ArrayList<>();
 
             for (CompraDetalle detalle : detallesCompraActual) {
+                Producto producto = productoDAO.obtenerPorId(detalle.getIdProducto());
                 List<Inventario> inventarios = inventarioDAO.obtenerPorBodega(idBodega);
-                Inventario inventarioProducto = null;
 
-                for (Inventario inv : inventarios) {
-                    if (inv.getIdProducto() == detalle.getIdProducto()) {
-                        inventarioProducto = inv;
-                        break;
-                    }
-                }
+                Inventario inventarioProducto = inventarios.stream()
+                        .filter(inv -> inv.getIdProducto() == detalle.getIdProducto())
+                        .findFirst()
+                        .orElse(null);
 
-                Producto prod = productoDAO.obtenerPorId(detalle.getIdProducto());
+                System.out.println("\n   📦 Producto: " + producto.getNombreProducto());
+                System.out.println("      - Cantidad solicitada: " + detalle.getCantidadDetalle());
 
                 if (inventarioProducto == null) {
-                    productosInsuficientes.add(prod.getNombreProducto() + " (no existe en inventario de esta bodega)");
-                    System.out.println("✗ Producto " + prod.getNombreProducto() + " no existe en inventario");
-                } else if (inventarioProducto.getCantidadInventario() < detalle.getCantidadDetalle()) {
-                    productosInsuficientes.add(prod.getNombreProducto() +
-                            " (disponible: " + inventarioProducto.getCantidadInventario() +
-                            ", solicitado: " + detalle.getCantidadDetalle() + ")");
-                    System.out.println("✗ Stock insuficiente para " + prod.getNombreProducto());
+                    String error = producto.getNombreProducto() + " (no existe en inventario de esta bodega)";
+                    productosInsuficientes.add(error);
+                    System.out.println("      ❌ ERROR: No existe en inventario");
+                } else {
+                    int stockInventario = inventarioProducto.getCantidadInventario();
+                    int stockProducto = producto.getStockProducto();
+
+                    System.out.println("      - Stock en inventario: " + stockInventario);
+                    System.out.println("      - Stock del producto: " + stockProducto);
+
+                    if (stockInventario < detalle.getCantidadDetalle()) {
+                        String error = producto.getNombreProducto() +
+                                " (disponible: " + stockInventario +
+                                ", solicitado: " + detalle.getCantidadDetalle() + ")";
+                        productosInsuficientes.add(error);
+                        System.out.println("      ❌ ERROR: Stock insuficiente");
+                    } else {
+                        System.out.println("      ✅ Stock suficiente");
+                    }
                 }
             }
 
+            // Si hay problemas de stock, mostrar y cancelar
             if (!productosInsuficientes.isEmpty()) {
+                System.out.println("\n❌ PROCESO CANCELADO: Stock insuficiente");
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Stock Insuficiente");
                 alert.setHeaderText("Los siguientes productos no tienen stock suficiente:");
                 alert.setContentText(String.join("\n", productosInsuficientes));
                 alert.showAndWait();
-                System.out.println("✗ Compra cancelada por stock insuficiente");
                 return;
             }
 
-            System.out.println("✓ Validación de stock completada");
+            System.out.println("\n✅ Verificación de stock completada exitosamente");
 
-            // Crear la compra
+            // ===== CREAR Y GUARDAR COMPRA =====
+            System.out.println("\n💾 PASO 2: Guardando compra en base de datos...");
+
             Compra compra = new Compra();
             compra.setFechaCompra(Date.valueOf(dpFechaCompra.getValue()));
             compra.setTotalCompra(new BigDecimal(txtTotal.getText().trim()));
             compra.setEstadoCompra(cmbEstado.getValue());
             compra.setIdProveedor(cmbProveedor.getValue().getIdProveedor());
 
-            System.out.println("Compra creada - Total: " + compra.getTotalCompra() + ", Estado: " + compra.getEstadoCompra());
-
-            // Guardar compra con detalles (transacción)
             List<CompraDetalle> detalles = new ArrayList<>(detallesCompraActual);
-            System.out.println("Número de detalles: " + detalles.size());
 
-            if (compraDAO.insertarCompraCompleta(compra, detalles)) {
-                System.out.println("✓ Compra guardada con ID: " + compra.getIdCompra());
-
-                // Procesar cada producto: descontar del inventario, del stock y registrar movimiento
-                int idUsuario = cmbUsuario.getValue().getIdUsuario();
-                String observacion = txtObservacion.getText().trim();
-                String referencia = txtReferencia.getText().trim();
-
-                boolean todosMovimientosExitosos = true;
-
-                for (CompraDetalle detalle : detalles) {
-                    System.out.println("\n--- Procesando producto ID: " + detalle.getIdProducto() + " ---");
-
-                    // Buscar inventario del producto en la bodega seleccionada
-                    List<Inventario> inventarios = inventarioDAO.obtenerPorBodega(idBodega);
-                    Inventario inventarioProducto = null;
-
-                    for (Inventario inv : inventarios) {
-                        if (inv.getIdProducto() == detalle.getIdProducto()) {
-                            inventarioProducto = inv;
-                            break;
-                        }
-                    }
-
-                    if (inventarioProducto != null) {
-                        // Descontar del inventario
-                        int cantidadActualInventario = inventarioProducto.getCantidadInventario();
-                        int nuevaCantidadInventario = cantidadActualInventario - detalle.getCantidadDetalle();
-
-                        System.out.println("Inventario antes: " + cantidadActualInventario);
-                        System.out.println("Inventario después: " + nuevaCantidadInventario);
-
-                        inventarioProducto.setCantidadInventario(nuevaCantidadInventario);
-
-                        if (inventarioDAO.actualizar(inventarioProducto)) {
-                            System.out.println("✓ Inventario actualizado correctamente");
-                        } else {
-                            System.out.println("✗ Error al actualizar inventario");
-                            todosMovimientosExitosos = false;
-                        }
-
-                        // Descontar del stock del producto
-                        Producto producto = productoDAO.obtenerPorId(detalle.getIdProducto());
-                        if (producto != null) {
-                            int stockActual = producto.getStockProducto();
-                            int nuevoStockProducto = stockActual - detalle.getCantidadDetalle();
-
-                            System.out.println("Stock producto antes: " + stockActual);
-                            System.out.println("Stock producto después: " + nuevoStockProducto);
-
-                            if (productoDAO.actualizarStock(detalle.getIdProducto(), nuevoStockProducto)) {
-                                System.out.println("✓ Stock del producto actualizado: " + producto.getNombreProducto());
-                            } else {
-                                System.out.println("✗ Error al actualizar stock del producto");
-                                todosMovimientosExitosos = false;
-                            }
-                        }
-
-                        // Registrar movimiento de SALIDA
-                        MovimientoInventario movimiento = new MovimientoInventario();
-                        movimiento.setTipoMovimiento("SALIDA");
-                        movimiento.setCantidadMovimiento(detalle.getCantidadDetalle());
-                        movimiento.setObservacionMovimiento(observacion.isEmpty() ?
-                                "Compra #" + compra.getIdCompra() : observacion);
-                        movimiento.setReferenciaMovimiento(referencia.isEmpty() ?
-                                "COMPRA-" + compra.getIdCompra() : referencia);
-                        movimiento.setIdInventario(inventarioProducto.getIdInventario());
-                        movimiento.setIdUsuario(idUsuario);
-
-                        if (movimientoDAO.insertar(movimiento)) {
-                            System.out.println("✓ Movimiento registrado correctamente");
-                        } else {
-                            todosMovimientosExitosos = false;
-                            System.err.println("✗ Error al registrar movimiento para producto ID: " +
-                                    detalle.getIdProducto());
-                        }
-                    } else {
-                        mostrarMensaje("⚠ Error: Producto no encontrado en inventario", "red");
-                        System.out.println("✗ Producto no encontrado en inventario");
-                        todosMovimientosExitosos = false;
-                    }
-                }
-
-                if (todosMovimientosExitosos) {
-                    mostrarMensaje("✓ Compra guardada exitosamente - Inventario y stock actualizados - ID: " +
-                            compra.getIdCompra(), "green");
-                    System.out.println("=== COMPRA COMPLETADA EXITOSAMENTE ===");
-                } else {
-                    mostrarMensaje("⚠ Compra guardada pero hubo errores en algunos movimientos", "orange");
-                    System.out.println("=== COMPRA COMPLETADA CON ERRORES ===");
-                }
-
-                cargarCompras();
-                limpiarCampos();
-                detallesCompraActual.clear();
-            } else {
+            if (!compraDAO.insertarCompraCompleta(compra, detalles)) {
                 mostrarMensaje("✗ Error al guardar la compra en la base de datos", "red");
-                System.out.println("✗ Error al insertar compra en BD");
+                System.out.println("❌ Error al insertar compra en BD");
+                return;
             }
 
+            System.out.println("✅ Compra guardada con ID: " + compra.getIdCompra());
+
+            // ===== PROCESAR SALIDAS DE INVENTARIO =====
+            System.out.println("\n📤 PASO 3: Procesando salidas de inventario...");
+
+            String observacion = txtObservacion.getText().trim();
+            String referencia = txtReferencia.getText().trim();
+            boolean todosMovimientosExitosos = true;
+
+            for (CompraDetalle detalle : detalles) {
+                Producto producto = productoDAO.obtenerPorId(detalle.getIdProducto());
+                System.out.println("\n   ━━━ Procesando: " + producto.getNombreProducto() + " ━━━");
+
+                // Buscar inventario del producto en la bodega
+                List<Inventario> inventarios = inventarioDAO.obtenerPorBodega(idBodega);
+                Inventario inventarioProducto = inventarios.stream()
+                        .filter(inv -> inv.getIdProducto() == detalle.getIdProducto())
+                        .findFirst()
+                        .orElse(null);
+
+                if (inventarioProducto != null) {
+                    // DESCONTAR del inventario
+                    int cantidadAntes = inventarioProducto.getCantidadInventario();
+                    int cantidadDespues = cantidadAntes - detalle.getCantidadDetalle();
+
+                    System.out.println("   📊 INVENTARIO:");
+                    System.out.println("      Antes:   " + cantidadAntes);
+                    System.out.println("      Salida:  -" + detalle.getCantidadDetalle());
+                    System.out.println("      Después: " + cantidadDespues);
+
+                    inventarioProducto.setCantidadInventario(cantidadDespues);
+
+                    if (inventarioDAO.actualizar(inventarioProducto)) {
+                        System.out.println("      ✅ Inventario actualizado");
+                    } else {
+                        System.out.println("      ❌ Error al actualizar inventario");
+                        todosMovimientosExitosos = false;
+                    }
+
+                    // DESCONTAR del stock del producto
+                    int stockAntes = producto.getStockProducto();
+                    int stockDespues = stockAntes - detalle.getCantidadDetalle();
+
+                    System.out.println("   📦 STOCK PRODUCTO:");
+                    System.out.println("      Antes:   " + stockAntes);
+                    System.out.println("      Salida:  -" + detalle.getCantidadDetalle());
+                    System.out.println("      Después: " + stockDespues);
+
+                    if (productoDAO.actualizarStock(detalle.getIdProducto(), stockDespues)) {
+                        System.out.println("      ✅ Stock del producto actualizado");
+                    } else {
+                        System.out.println("      ❌ Error al actualizar stock del producto");
+                        todosMovimientosExitosos = false;
+                    }
+
+                    // REGISTRAR MOVIMIENTO DE SALIDA
+                    System.out.println("   📝 MOVIMIENTO:");
+
+                    MovimientoInventario movimiento = new MovimientoInventario();
+                    movimiento.setTipoMovimiento("SALIDA");
+                    movimiento.setCantidadMovimiento(detalle.getCantidadDetalle());
+                    movimiento.setObservacionMovimiento(observacion.isEmpty() ?
+                            "Compra #" + compra.getIdCompra() : observacion);
+                    movimiento.setReferenciaMovimiento(referencia.isEmpty() ?
+                            "COMPRA-" + compra.getIdCompra() : referencia);
+                    movimiento.setIdInventario(inventarioProducto.getIdInventario());
+                    movimiento.setIdUsuario(idUsuario);
+
+                    if (movimientoDAO.insertar(movimiento)) {
+                        System.out.println("      ✅ Movimiento de SALIDA registrado");
+                    } else {
+                        todosMovimientosExitosos = false;
+                        System.out.println("      ❌ Error al registrar movimiento");
+                    }
+                } else {
+                    mostrarMensaje("⚠ Error: Producto no encontrado en inventario", "red");
+                    System.out.println("   ❌ Producto no encontrado en inventario");
+                    todosMovimientosExitosos = false;
+                }
+            }
+
+            // ===== RESULTADO FINAL =====
+            System.out.println("\n═══════════════════════════════════════════════════════");
+            if (todosMovimientosExitosos) {
+                System.out.println("✅ ¡PROCESO COMPLETADO EXITOSAMENTE!");
+                System.out.println("   • Compra ID: " + compra.getIdCompra());
+                System.out.println("   • Inventario actualizado (salidas)");
+                System.out.println("   • Stock de productos actualizado");
+                System.out.println("   • Movimientos registrados");
+                mostrarMensaje("✓ Compra guardada exitosamente - Inventario y stock actualizados - ID: " +
+                        compra.getIdCompra(), "green");
+            } else {
+                System.out.println("⚠️ PROCESO COMPLETADO CON ERRORES");
+                mostrarMensaje("⚠ Compra guardada pero hubo errores en algunos movimientos", "orange");
+            }
+            System.out.println("═══════════════════════════════════════════════════════\n");
+
+            cargarCompras();
+            limpiarCampos();
+            detallesCompraActual.clear();
+
         } catch (Exception e) {
-            mostrarMensaje("✗ Error: " + e.getMessage(), "red");
-            System.err.println("✗ Excepción durante guardado:");
+            System.out.println("\n❌ EXCEPCIÓN DURANTE EL PROCESO:");
+            System.out.println("   " + e.getMessage());
             e.printStackTrace();
+            mostrarMensaje("✗ Error: " + e.getMessage(), "red");
         }
     }
 
@@ -541,16 +551,11 @@ public class CompraController implements Initializable {
 
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(nuevoEstado -> {
-                System.out.println("Actualizando estado de compra ID " + compraSeleccionada.getIdCompra() +
-                        " a: " + nuevoEstado);
-
                 if (compraDAO.actualizarEstado(compraSeleccionada.getIdCompra(), nuevoEstado)) {
                     mostrarMensaje("✓ Estado actualizado a: " + nuevoEstado, "green");
-                    System.out.println("✓ Estado actualizado correctamente");
                     cargarCompras();
                 } else {
                     mostrarMensaje("✗ Error al actualizar el estado", "red");
-                    System.out.println("✗ Error al actualizar estado en BD");
                 }
             });
         } catch (Exception e) {
