@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.LoginController"
+            style="-fx-background-color: linear-gradient(to bottom right, #667eea 0%, #764ba2 100%);">
+
+    <center>
+        <!-- Contenedor principal del login -->
+        <VBox alignment="CENTER" spacing="0" maxWidth="450" maxHeight="650">
+
+            <!-- Tarjeta de login -->
+            <VBox spacing="25" style="-fx-background-color: white; -fx-background-radius: 15;
+                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0, 0, 5);">
+                <padding>
+                    <Insets top="50" right="50" bottom="50" left="50"/>
+                </padding>
+
+                <!-- Logo y título -->
+                <VBox alignment="CENTER" spacing="10">
+                    <Label text="🏢" style="-fx-font-size: 48;"/>
+                    <Label text="DevSolutionsF" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <Label text="Sistema de Gestión" style="-fx-font-size: 14; -fx-text-fill: #7f8c8d;"/>
+                </VBox>
+
+                <Separator/>
+
+                <!-- Título de login -->
+                <Label text="Iniciar Sesión" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #2c3e50;">
+                    <VBox.margin>
+                        <Insets top="10"/>
+                    </VBox.margin>
+                </Label>
+
+                <!-- Campo de usuario/correo -->
+                <VBox spacing="8">
+                    <Label text="Usuario o Correo Electrónico" style="-fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                    <TextField fx:id="txtUsuario" promptText="correo@ejemplo.com"
+                               style="-fx-font-size: 14; -fx-padding: 12; -fx-background-radius: 8;
+                                      -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-border-width: 1;"/>
+                </VBox>
+
+                <!-- Campo de contraseña -->
+                <VBox spacing="8">
+                    <Label text="Contraseña" style="-fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+                    <PasswordField fx:id="txtContrasena" promptText="Ingrese su contraseña"
+                                   style="-fx-font-size: 14; -fx-padding: 12; -fx-background-radius: 8;
+                                          -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-border-width: 1;"/>
+                    <TextField fx:id="txtPasswordVisible" promptText="Ingrese su contraseña"
+                               style="-fx-font-size: 14; -fx-padding: 12; -fx-background-radius: 8;
+                                      -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-border-width: 1;"/>
+                </VBox>
+
+                <!-- Checkbox mostrar contraseña -->
+                <CheckBox fx:id="chkMostrarPassword" text="Mostrar contraseña"
+                          style="-fx-text-fill: #7f8c8d;"/>
+
+                <!-- Mensaje de error/éxito -->
+                <Label fx:id="lblMensaje" wrapText="true" style="-fx-font-size: 13;" alignment="CENTER"/>
+
+                <!-- Botón de login -->
+                <Button fx:id="btnLogin" text="Iniciar Sesión" onAction="#iniciarSesion"
+                        maxWidth="Infinity" prefHeight="45"
+                        style="-fx-background-color: linear-gradient(to right, #667eea 0%, #764ba2 100%);
+                               -fx-text-fill: white; -fx-font-size: 16; -fx-font-weight: bold;
+                               -fx-background-radius: 8; -fx-cursor: hand;">
+                    <VBox.margin>
+                        <Insets top="10"/>
+                    </VBox.margin>
+                </Button>
+
+                <!-- Botón limpiar -->
+                <Button text="Limpiar Campos" onAction="#limpiarCampos"
+                        maxWidth="Infinity" prefHeight="40"
+                        style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d;
+                               -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-border-width: 1;
+                               -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+                <Separator/>
+
+                <!-- Información de roles -->
+                <VBox spacing="8" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 8;">
+                    <Label text="Roles del Sistema:" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12;"/>
+                    <Label text="👑 PATRON - Control total" style="-fx-text-fill: #e74c3c; -fx-font-size: 11;"/>
+                    <Label text="🎯 GERENTE - Gestión operativa" style="-fx-text-fill: #3498db; -fx-font-size: 11;"/>
+                    <Label text="📦 BODEGUERO - Operaciones de inventario" style="-fx-text-fill: #f39c12; -fx-font-size: 11;"/>
+                    <Label text="📊 EMPLEADO - Solo consultas" style="-fx-text-fill: #95a5a6; -fx-font-size: 11;"/>
+                </VBox>
+
+            </VBox>
+
+        </VBox>
+    </center>
+
+    <!-- Footer -->
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-padding: 20;">
+            <Label text="© 2025 DevSolutionsF - Todos los derechos reservados"
+                   style="-fx-text-fill: white; -fx-font-size: 11;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
