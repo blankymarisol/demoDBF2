@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import model.*;
 import util.PDFGenerator;
+import util.PermissionHelper;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -62,12 +63,16 @@ public class CompraController implements Initializable {
 
     private Compra compraSeleccionada;
     private ObservableList<CompraDetalle> detallesCompraActual = FXCollections.observableArrayList();
+    private LoginSession session = LoginSession.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configurarTablas();
         cargarComboBoxes();
         cargarCompras();
+
+        // ========== APLICAR PERMISOS ==========
+        aplicarPermisos();
 
         tblCompras.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -82,6 +87,28 @@ public class CompraController implements Initializable {
         });
 
         tblDetalles.setItems(detallesCompraActual);
+    }
+
+    /**
+     * MÉTODO CRÍTICO: Aplica los permisos según el rol del usuario
+     */
+    private void aplicarPermisos() {
+        System.out.println("\n[COMPRAS] Aplicando permisos para: " + session.getRolActual());
+
+        boolean puedeGestionar = session.puedeGestionarCompras();
+
+        // Los campos de solo lectura si no puede gestionar
+        dpFechaCompra.setDisable(!puedeGestionar);
+        cmbProveedor.setDisable(!puedeGestionar);
+        cmbUsuario.setDisable(!puedeGestionar);
+        cmbBodega.setDisable(!puedeGestionar);
+        cmbEstado.setDisable(!puedeGestionar);
+        txtObservacion.setEditable(puedeGestionar);
+        txtReferencia.setEditable(puedeGestionar);
+        cmbProducto.setDisable(!puedeGestionar);
+        txtCantidad.setEditable(puedeGestionar);
+
+        System.out.println("  - Gestionar compras: " + (puedeGestionar ? "PERMITIDO" : "BLOQUEADO"));
     }
 
     private void configurarTablas() {
@@ -268,6 +295,12 @@ public class CompraController implements Initializable {
 
     @FXML
     private void agregarProducto() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCompras()) {
+            PermissionHelper.mostrarErrorPermiso("agregar productos a compras");
+            return;
+        }
+
         if (!validarCamposProducto()) return;
 
         Producto producto = cmbProducto.getValue();
@@ -297,6 +330,12 @@ public class CompraController implements Initializable {
 
     @FXML
     private void quitarProducto() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCompras()) {
+            PermissionHelper.mostrarErrorPermiso("quitar productos de compras");
+            return;
+        }
+
         CompraDetalle seleccionado = tblDetalles.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             mostrarMensaje("✗ Seleccione un producto de la lista", "red");
@@ -320,6 +359,12 @@ public class CompraController implements Initializable {
 
     @FXML
     private void guardarCompra() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCompras()) {
+            PermissionHelper.mostrarErrorPermiso("guardar compras");
+            return;
+        }
+
         System.out.println("\n═══════════════════════════════════════════════════════");
         System.out.println("    INICIANDO PROCESO DE GUARDADO DE COMPRA (SALIDA)");
         System.out.println("═══════════════════════════════════════════════════════\n");
@@ -537,6 +582,12 @@ public class CompraController implements Initializable {
 
     @FXML
     private void actualizarEstado() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCompras()) {
+            PermissionHelper.mostrarErrorPermiso("actualizar estado de compras");
+            return;
+        }
+
         if (compraSeleccionada == null) {
             mostrarMensaje("✗ Seleccione una compra de la tabla", "red");
             return;

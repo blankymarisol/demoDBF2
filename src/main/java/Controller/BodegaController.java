@@ -8,7 +8,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.Bodega;
+import model.LoginSession;
 import util.PDFGenerator;
+import util.PermissionHelper;
 
 import java.io.File;
 import java.net.URL;
@@ -23,13 +25,20 @@ public class BodegaController implements Initializable {
     @FXML private TableColumn<Bodega, String> colNombre, colUbicacion, colDescripcion, colTelefono;
     @FXML private Label lblMensaje;
 
+    // Botones
+    @FXML private Button btnNuevo, btnGuardar, btnActualizar, btnEliminar, btnLimpiar;
+
     private BodegaDAO bodegaDAO = new BodegaDAO();
     private Bodega bodegaSeleccionada;
+    private LoginSession session = LoginSession.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configurarTabla();
         cargarBodegas();
+
+        // ========== APLICAR PERMISOS ==========
+        aplicarPermisos();
 
         tblBodegas.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -37,6 +46,31 @@ public class BodegaController implements Initializable {
                 llenarCampos(newSelection);
             }
         });
+    }
+
+    /**
+     * MÉTODO CRÍTICO: Aplica los permisos según el rol del usuario
+     */
+    private void aplicarPermisos() {
+        System.out.println("\n[BODEGAS] Aplicando permisos para: " + session.getRolActual());
+
+        // Botones de acción
+        btnGuardar.setDisable(!session.puedeGestionarBodegas());
+        btnActualizar.setDisable(!session.puedeGestionarBodegas());
+        btnEliminar.setDisable(!session.puedeGestionarBodegas());
+
+        // Campos de formulario (solo lectura si no puede editar)
+        boolean puedeEditar = session.puedeGestionarBodegas();
+        txtNombre.setEditable(puedeEditar);
+        txtUbicacion.setEditable(puedeEditar);
+        txtDescripcion.setEditable(puedeEditar);
+        txtTelefono.setEditable(puedeEditar);
+        txtCapacidad.setEditable(puedeEditar);
+        txtMunicipioId.setEditable(puedeEditar);
+
+        System.out.println("  - Guardar: " + (btnGuardar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Actualizar: " + (btnActualizar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Eliminar: " + (btnEliminar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
     }
 
     private void configurarTabla() {
@@ -66,6 +100,12 @@ public class BodegaController implements Initializable {
 
     @FXML
     private void guardarBodega() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarBodegas()) {
+            PermissionHelper.mostrarErrorPermiso("agregar bodegas");
+            return;
+        }
+
         if (!validarCampos()) return;
 
         Bodega bodega = new Bodega();
@@ -89,6 +129,12 @@ public class BodegaController implements Initializable {
 
     @FXML
     private void actualizarBodega() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarBodegas()) {
+            PermissionHelper.mostrarErrorPermiso("actualizar bodegas");
+            return;
+        }
+
         if (bodegaSeleccionada == null) {
             lblMensaje.setText("✗ Seleccione una bodega de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -117,6 +163,12 @@ public class BodegaController implements Initializable {
 
     @FXML
     private void eliminarBodega() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarBodegas()) {
+            PermissionHelper.mostrarErrorPermiso("eliminar bodegas");
+            return;
+        }
+
         if (bodegaSeleccionada == null) {
             lblMensaje.setText("✗ Seleccione una bodega de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");
