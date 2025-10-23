@@ -4,6 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Controller.MainController">
@@ -79,6 +81,13 @@
     <center>
         <StackPane fx:id="contentArea" style="-fx-background-color: #ecf0f1;">
             <VBox alignment="CENTER" spacing="20">
+                <!-- Imagen de Kirby -->
+                <ImageView fitHeight="200" fitWidth="200" preserveRatio="true">
+                    <image>
+                        <Image url="@images/kirby.png"/>
+                    </image>
+                </ImageView>
+
                 <Label text="Bienvenido al Sistema de Gestión"
                        style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
                 <Label text="Selecciona una opción del menú para comenzar"
