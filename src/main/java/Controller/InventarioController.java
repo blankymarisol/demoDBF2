@@ -48,6 +48,14 @@ public class InventarioController implements Initializable {
                 llenarCampos(newSelection);
             }
         });
+
+        // Listener para cargar automáticamente el precio cuando se selecciona un producto
+        cmbProducto.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Cargar el precio de venta basado en el costo del producto
+                txtPrecioVenta.setText(newValue.getCostoUnitarioProducto().toString());
+            }
+        });
     }
 
     private void configurarTabla() {

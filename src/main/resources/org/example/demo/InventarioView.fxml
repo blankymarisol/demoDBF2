@@ -4,97 +4,104 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Controller.InventarioController" spacing="10" style="-fx-padding: 20;">
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.InventarioController" fitToWidth="true" fitToHeight="true">
 
-    <Label text="Gestión de Inventarios (Entradas)" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-    <Separator/>
+    <VBox spacing="10" style="-fx-padding: 20;">
 
-    <!-- Formulario de Inventario -->
-    <VBox spacing="10" style="-fx-border-color: #27ae60; -fx-border-width: 2; -fx-padding: 10; -fx-border-radius: 5;">
-        <Label text="📦 Información del Inventario" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+        <Label text="Gestión de Inventarios (Entradas)" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+        <Separator/>
 
-        <GridPane hgap="10" vgap="10">
-            <Label text="Bodega:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <ComboBox fx:id="cmbBodega" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="250"/>
+        <!-- Formulario de Inventario -->
+        <VBox spacing="10" style="-fx-border-color: #27ae60; -fx-border-width: 2; -fx-padding: 10; -fx-border-radius: 5;">
+            <Label text="📦 Información del Inventario" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
 
-            <Label text="Producto:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <ComboBox fx:id="cmbProducto" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="250"/>
+            <GridPane hgap="10" vgap="10">
+                <Label text="Bodega:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <ComboBox fx:id="cmbBodega" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="250"/>
 
-            <Label text="Cantidad:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <TextField fx:id="txtCantidad" GridPane.columnIndex="1" GridPane.rowIndex="2"
-                       promptText="0" prefWidth="200"/>
+                <Label text="Producto:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="cmbProducto" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="250"/>
 
-            <Label text="Precio Venta:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-            <TextField fx:id="txtPrecioVenta" GridPane.columnIndex="3" GridPane.rowIndex="0"
-                       promptText="0.00" prefWidth="150"/>
+                <Label text="Cantidad:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <TextField fx:id="txtCantidad" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                           promptText="0" prefWidth="200"/>
 
-            <Label text="Usuario:" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-text-fill: red; -fx-font-weight: bold;"/>
-            <ComboBox fx:id="cmbUsuario" GridPane.columnIndex="3" GridPane.rowIndex="1" prefWidth="250"/>
+                <Label text="Precio Venta:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                <TextField fx:id="txtPrecioVenta" GridPane.columnIndex="3" GridPane.rowIndex="0"
+                           promptText="Se carga automáticamente" prefWidth="150" editable="false"
+                           style="-fx-background-color: #ecf0f1;"/>
 
-            <Label text="Observación:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-            <TextField fx:id="txtObservacion" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="3"
-                       promptText="Observaciones opcionales..." prefWidth="400"/>
+                <Label text="Usuario:" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-text-fill: red; -fx-font-weight: bold;"/>
+                <ComboBox fx:id="cmbUsuario" GridPane.columnIndex="3" GridPane.rowIndex="1" prefWidth="250"/>
 
-            <Label text="Referencia:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-            <TextField fx:id="txtReferencia" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="3"
-                       promptText="Referencia opcional (ej: orden de compra, factura, etc.)" prefWidth="400"/>
-        </GridPane>
+                <Label text="Observación:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextField fx:id="txtObservacion" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="3"
+                           promptText="Observaciones opcionales..." prefWidth="400"/>
+
+                <Label text="Referencia:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <TextField fx:id="txtReferencia" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="3"
+                           promptText="Referencia opcional (ej: orden de compra, factura, etc.)" prefWidth="400"/>
+            </GridPane>
+        </VBox>
+
+        <!-- Botones de acción -->
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="btnNuevo" text="🆕 Nueva Entrada" onAction="#nuevoInventario" prefWidth="140"/>
+            <Button fx:id="btnGuardar" text="💾 Guardar" onAction="#guardarInventario" prefWidth="120"
+                    style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Button fx:id="btnActualizar" text="🔄 Actualizar" onAction="#actualizarInventario" prefWidth="120"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            <Button fx:id="btnEliminar" text="🗑️ Eliminar" onAction="#eliminarInventario" prefWidth="120"
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+            <Button fx:id="btnLimpiar" text="🧹 Limpiar" onAction="#limpiarCampos" prefWidth="120"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- Filtros y Exportar PDF -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Filtrar por Bodega:"/>
+            <ComboBox fx:id="cmbFiltroBodega" prefWidth="200"/>
+            <Button text="🔍 Filtrar" onAction="#filtrarPorBodega"/>
+            <Button text="📊 Stock Bajo" onAction="#mostrarStockBajo"/>
+            <Button text="↻ Todos" onAction="#cargarInventarios"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="📄 Exportar PDF" onAction="#exportarPDF"
+                    style="-fx-background-color: #e67e22; -fx-text-fill: white;" prefWidth="130"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- Información importante -->
+        <HBox style="-fx-background-color: #d4edda; -fx-padding: 10; -fx-border-radius: 5;">
+            <VBox spacing="3">
+                <Label text="ℹ️ IMPORTANTE:" style="-fx-text-fill: #155724; -fx-font-weight: bold;"/>
+                <Label text="• Cada entrada al inventario se registra automáticamente como un MOVIMIENTO de tipo ENTRADA"
+                       style="-fx-text-fill: #155724;"/>
+                <Label text="• La cantidad ingresada se SUMA al inventario de la bodega seleccionada"
+                       style="-fx-text-fill: #155724;"/>
+                <Label text="• La cantidad ingresada también se SUMA al stock del producto"
+                       style="-fx-text-fill: #155724; -fx-font-weight: bold;"/>
+                <Label text="• El precio de venta se carga automáticamente del costo del producto"
+                       style="-fx-text-fill: #155724;"/>
+            </VBox>
+        </HBox>
+
+        <!-- Tabla de inventarios -->
+        <TableView fx:id="tblInventarios" prefHeight="300">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="colCantidad" text="Cantidad" prefWidth="100"/>
+                <TableColumn fx:id="colPrecioVenta" text="Precio Venta" prefWidth="100"/>
+                <TableColumn fx:id="colFecha" text="Última Actualización" prefWidth="180"/>
+                <TableColumn fx:id="colBodega" text="ID Bodega" prefWidth="100"/>
+                <TableColumn fx:id="colProducto" text="ID Producto" prefWidth="100"/>
+            </columns>
+        </TableView>
+
+        <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold; -fx-font-size: 12;"/>
+
     </VBox>
 
-    <!-- Botones de acción -->
-    <HBox spacing="10" alignment="CENTER">
-        <Button fx:id="btnNuevo" text="🆕 Nueva Entrada" onAction="#nuevoInventario" prefWidth="140"/>
-        <Button fx:id="btnGuardar" text="💾 Guardar" onAction="#guardarInventario" prefWidth="120"
-                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
-        <Button fx:id="btnActualizar" text="🔄 Actualizar" onAction="#actualizarInventario" prefWidth="120"
-                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
-        <Button fx:id="btnEliminar" text="🗑️ Eliminar" onAction="#eliminarInventario" prefWidth="120"
-                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
-        <Button fx:id="btnLimpiar" text="🧹 Limpiar" onAction="#limpiarCampos" prefWidth="120"/>
-    </HBox>
-
-    <Separator/>
-
-    <!-- Filtros y Exportar PDF -->
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Filtrar por Bodega:"/>
-        <ComboBox fx:id="cmbFiltroBodega" prefWidth="200"/>
-        <Button text="🔍 Filtrar" onAction="#filtrarPorBodega"/>
-        <Button text="📊 Stock Bajo" onAction="#mostrarStockBajo"/>
-        <Button text="↻ Todos" onAction="#cargarInventarios"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="📄 Exportar PDF" onAction="#exportarPDF"
-                style="-fx-background-color: #e67e22; -fx-text-fill: white;" prefWidth="130"/>
-    </HBox>
-
-    <Separator/>
-
-    <!-- Información importante -->
-    <HBox style="-fx-background-color: #d4edda; -fx-padding: 10; -fx-border-radius: 5;">
-        <VBox spacing="3">
-            <Label text="ℹ️ IMPORTANTE:" style="-fx-text-fill: #155724; -fx-font-weight: bold;"/>
-            <Label text="• Cada entrada al inventario se registra automáticamente como un MOVIMIENTO de tipo ENTRADA"
-                   style="-fx-text-fill: #155724;"/>
-            <Label text="• La cantidad ingresada se SUMA al inventario de la bodega seleccionada"
-                   style="-fx-text-fill: #155724;"/>
-            <Label text="• La cantidad ingresada también se SUMA al stock del producto"
-                   style="-fx-text-fill: #155724; -fx-font-weight: bold;"/>
-        </VBox>
-    </HBox>
-
-    <!-- Tabla de inventarios -->
-    <TableView fx:id="tblInventarios" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colCantidad" text="Cantidad" prefWidth="100"/>
-            <TableColumn fx:id="colPrecioVenta" text="Precio Venta" prefWidth="100"/>
-            <TableColumn fx:id="colFecha" text="Última Actualización" prefWidth="180"/>
-            <TableColumn fx:id="colBodega" text="ID Bodega" prefWidth="100"/>
-            <TableColumn fx:id="colProducto" text="ID Producto" prefWidth="100"/>
-        </columns>
-    </TableView>
-
-    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold; -fx-font-size: 12;"/>
-
-</VBox>
+</ScrollPane>

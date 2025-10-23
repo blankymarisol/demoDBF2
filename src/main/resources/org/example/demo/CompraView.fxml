@@ -4,146 +4,150 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Controller.CompraController" spacing="10" style="-fx-padding: 20;">
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controller.CompraController" fitToWidth="true" fitToHeight="true">
 
-    <Label text="Gestión de Compras (Salidas)" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-    <Separator/>
+    <VBox spacing="10" style="-fx-padding: 20;">
 
-    <!-- Sección: Datos de la Compra -->
-    <VBox spacing="10" style="-fx-border-color: #3498db; -fx-border-width: 2; -fx-padding: 10; -fx-border-radius: 5;">
-        <Label text="📋 Datos de la Compra" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+        <Label text="Gestión de Compras (Salidas)" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+        <Separator/>
 
-        <GridPane hgap="10" vgap="10">
-            <Label text="Fecha:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <DatePicker fx:id="dpFechaCompra" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
+        <!-- Sección: Datos de la Compra -->
+        <VBox spacing="10" style="-fx-border-color: #3498db; -fx-border-width: 2; -fx-padding: 10; -fx-border-radius: 5;">
+            <Label text="📋 Datos de la Compra" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
 
-            <Label text="Proveedor:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <ComboBox fx:id="cmbProveedor" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
+            <GridPane hgap="10" vgap="10">
+                <Label text="Fecha:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <DatePicker fx:id="dpFechaCompra" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
 
-            <Label text="Estado:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <ComboBox fx:id="cmbEstado" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="200"/>
+                <Label text="Proveedor:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="cmbProveedor" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
 
-            <Label text="Bodega:" GridPane.columnIndex="2" GridPane.rowIndex="0" style="-fx-text-fill: red; -fx-font-weight: bold;"/>
-            <ComboBox fx:id="cmbBodega" GridPane.columnIndex="3" GridPane.rowIndex="0" prefWidth="250"/>
+                <Label text="Estado:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <ComboBox fx:id="cmbEstado" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="200"/>
 
-            <Label text="Usuario:" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-text-fill: red; -fx-font-weight: bold;"/>
-            <ComboBox fx:id="cmbUsuario" GridPane.columnIndex="3" GridPane.rowIndex="1" prefWidth="250"/>
+                <Label text="Bodega:" GridPane.columnIndex="2" GridPane.rowIndex="0" style="-fx-text-fill: red; -fx-font-weight: bold;"/>
+                <ComboBox fx:id="cmbBodega" GridPane.columnIndex="3" GridPane.rowIndex="0" prefWidth="250"/>
 
-            <Label text="Total:" GridPane.columnIndex="2" GridPane.rowIndex="2" style="-fx-font-weight: bold;"/>
-            <TextField fx:id="txtTotal" GridPane.columnIndex="3" GridPane.rowIndex="2"
-                       editable="false" prefWidth="150"
-                       style="-fx-background-color: #ecf0f1; -fx-font-size: 14; -fx-font-weight: bold;"/>
+                <Label text="Usuario:" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-text-fill: red; -fx-font-weight: bold;"/>
+                <ComboBox fx:id="cmbUsuario" GridPane.columnIndex="3" GridPane.rowIndex="1" prefWidth="250"/>
 
-            <Label text="Observación:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-            <TextField fx:id="txtObservacion" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="3"
-                       promptText="Observaciones opcionales..." prefWidth="500"/>
+                <Label text="Total:" GridPane.columnIndex="2" GridPane.rowIndex="2" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="txtTotal" GridPane.columnIndex="3" GridPane.rowIndex="2"
+                           editable="false" prefWidth="150"
+                           style="-fx-background-color: #ecf0f1; -fx-font-size: 14; -fx-font-weight: bold;"/>
 
-            <Label text="Referencia:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-            <TextField fx:id="txtReferencia" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="3"
-                       promptText="Referencia opcional (ej: factura, orden de compra, etc.)" prefWidth="500"/>
-        </GridPane>
-    </VBox>
+                <Label text="Observación:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextField fx:id="txtObservacion" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="3"
+                           promptText="Observaciones opcionales..." prefWidth="500"/>
 
-    <Separator/>
+                <Label text="Referencia:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <TextField fx:id="txtReferencia" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="3"
+                           promptText="Referencia opcional (ej: factura, orden de compra, etc.)" prefWidth="500"/>
+            </GridPane>
+        </VBox>
 
-    <!-- Sección: Agregar Productos -->
-    <VBox spacing="10" style="-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-padding: 10; -fx-border-radius: 5;">
-        <Label text="🛒 Agregar Productos a la Compra" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+        <Separator/>
 
-        <GridPane hgap="10" vgap="10">
-            <Label text="Producto:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <ComboBox fx:id="cmbProducto" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
+        <!-- Sección: Agregar Productos -->
+        <VBox spacing="10" style="-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-padding: 10; -fx-border-radius: 5;">
+            <Label text="🛒 Agregar Productos a la Compra" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
 
-            <Label text="Cantidad:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-            <TextField fx:id="txtCantidad" GridPane.columnIndex="3" GridPane.rowIndex="0"
-                       promptText="0" prefWidth="100"/>
+            <GridPane hgap="10" vgap="10">
+                <Label text="Producto:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <ComboBox fx:id="cmbProducto" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
 
-            <Label text="Precio Unitario:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <TextField fx:id="txtPrecioUnitario" GridPane.columnIndex="1" GridPane.rowIndex="1"
-                       promptText="Se carga automáticamente" prefWidth="150" editable="false"
-                       style="-fx-background-color: #ecf0f1;"/>
+                <Label text="Cantidad:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                <TextField fx:id="txtCantidad" GridPane.columnIndex="3" GridPane.rowIndex="0"
+                           promptText="0" prefWidth="100"/>
 
-            <HBox spacing="10" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.columnSpan="2" alignment="CENTER_LEFT">
-                <Button text="➕ Agregar" onAction="#agregarProducto" prefWidth="120"
-                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Button text="➖ Quitar" onAction="#quitarProducto" prefWidth="120"
-                        style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
-            </HBox>
-        </GridPane>
+                <Label text="Precio Unitario:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="txtPrecioUnitario" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                           promptText="Se carga automáticamente" prefWidth="150" editable="false"
+                           style="-fx-background-color: #ecf0f1;"/>
 
-        <!-- Tabla de productos agregados -->
-        <TableView fx:id="tblDetalles" prefHeight="200">
+                <HBox spacing="10" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.columnSpan="2" alignment="CENTER_LEFT">
+                    <Button text="➕ Agregar" onAction="#agregarProducto" prefWidth="120"
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Button text="➖ Quitar" onAction="#quitarProducto" prefWidth="120"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+                </HBox>
+            </GridPane>
+
+            <!-- Tabla de productos agregados -->
+            <TableView fx:id="tblDetalles" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="colProducto" text="Producto" prefWidth="250"/>
+                    <TableColumn fx:id="colCantidadDetalle" text="Cantidad" prefWidth="100"/>
+                    <TableColumn fx:id="colPrecioDetalle" text="Precio Unit." prefWidth="100"/>
+                    <TableColumn fx:id="colSubtotal" text="Subtotal" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <Separator/>
+
+        <!-- Información importante -->
+        <HBox style="-fx-background-color: #fff3cd; -fx-padding: 10; -fx-border-radius: 5;">
+            <VBox spacing="5">
+                <Label text="⚠️ IMPORTANTE:" style="-fx-text-fill: #856404; -fx-font-weight: bold; -fx-font-size: 12;"/>
+                <Label text="• Al guardar una compra, se registrará automáticamente un MOVIMIENTO de tipo SALIDA"
+                       style="-fx-text-fill: #856404;"/>
+                <Label text="• La cantidad comprada se descontará del INVENTARIO de la bodega seleccionada"
+                       style="-fx-text-fill: #856404;"/>
+                <Label text="• La cantidad comprada también se descontará del STOCK del producto"
+                       style="-fx-text-fill: #856404; -fx-font-weight: bold;"/>
+                <Label text="• El precio unitario se carga automáticamente del costo del producto"
+                       style="-fx-text-fill: #856404;"/>
+                <Label text="• Las compras NO pueden ser eliminadas una vez guardadas"
+                       style="-fx-text-fill: #856404; -fx-font-weight: bold;"/>
+            </VBox>
+        </HBox>
+
+        <Separator/>
+
+        <!-- Botones de acción principales -->
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="🆕 Nueva" onAction="#nuevaCompra" prefWidth="120"/>
+            <Button text="💾 Guardar" onAction="#guardarCompra" prefWidth="120"
+                    style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Button text="🔄 Actualizar Estado" onAction="#actualizarEstado" prefWidth="150"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            <Button text="🧹 Limpiar" onAction="#limpiarCampos" prefWidth="120"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- Filtros y Exportar PDF -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Filtros:" style="-fx-font-weight: bold;"/>
+            <ComboBox fx:id="cmbFiltroEstado" promptText="Estado..." prefWidth="150"/>
+            <Button text="🔍 Por Estado" onAction="#filtrarPorEstado"/>
+            <Button text="🏢 Por Proveedor" onAction="#filtrarPorProveedor"/>
+            <Button text="📅 Por Fechas" onAction="#filtrarPorFechas"/>
+            <Button text="↻ Todas" onAction="#cargarCompras"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="📄 Exportar PDF" onAction="#exportarPDF"
+                    style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold;" prefWidth="130"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- Tabla principal de compras -->
+        <Label text="📊 Historial de Compras" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+        <TableView fx:id="tblCompras" prefHeight="300">
             <columns>
-                <TableColumn fx:id="colProducto" text="Producto" prefWidth="250"/>
-                <TableColumn fx:id="colCantidadDetalle" text="Cantidad" prefWidth="100"/>
-                <TableColumn fx:id="colPrecioDetalle" text="Precio Unit." prefWidth="100"/>
-                <TableColumn fx:id="colSubtotal" text="Subtotal" prefWidth="100"/>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="colFecha" text="Fecha" prefWidth="120"/>
+                <TableColumn fx:id="colTotal" text="Total (Q)" prefWidth="100"/>
+                <TableColumn fx:id="colEstado" text="Estado" prefWidth="120"/>
+                <TableColumn fx:id="colProveedor" text="ID Prov." prefWidth="80"/>
+                <TableColumn fx:id="colNombreProveedor" text="Proveedor" prefWidth="250"/>
             </columns>
         </TableView>
+
+        <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold; -fx-font-size: 12;"/>
+
     </VBox>
 
-    <Separator/>
-
-    <!-- Información importante -->
-    <HBox style="-fx-background-color: #fff3cd; -fx-padding: 10; -fx-border-radius: 5;">
-        <VBox spacing="5">
-            <Label text="⚠️ IMPORTANTE:" style="-fx-text-fill: #856404; -fx-font-weight: bold; -fx-font-size: 12;"/>
-            <Label text="• Al guardar una compra, se registrará automáticamente un MOVIMIENTO de tipo SALIDA"
-                   style="-fx-text-fill: #856404;"/>
-            <Label text="• La cantidad comprada se descontará del INVENTARIO de la bodega seleccionada"
-                   style="-fx-text-fill: #856404;"/>
-            <Label text="• La cantidad comprada también se descontará del STOCK del producto"
-                   style="-fx-text-fill: #856404; -fx-font-weight: bold;"/>
-            <Label text="• El precio unitario se carga automáticamente del costo del producto"
-                   style="-fx-text-fill: #856404;"/>
-            <Label text="• Las compras NO pueden ser eliminadas una vez guardadas"
-                   style="-fx-text-fill: #856404; -fx-font-weight: bold;"/>
-        </VBox>
-    </HBox>
-
-    <Separator/>
-
-    <!-- Botones de acción principales -->
-    <HBox spacing="10" alignment="CENTER">
-        <Button text="🆕 Nueva" onAction="#nuevaCompra" prefWidth="120"/>
-        <Button text="💾 Guardar" onAction="#guardarCompra" prefWidth="120"
-                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
-        <Button text="🔄 Actualizar Estado" onAction="#actualizarEstado" prefWidth="150"
-                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
-        <Button text="🧹 Limpiar" onAction="#limpiarCampos" prefWidth="120"/>
-    </HBox>
-
-    <Separator/>
-
-    <!-- Filtros y Exportar PDF -->
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Filtros:" style="-fx-font-weight: bold;"/>
-        <ComboBox fx:id="cmbFiltroEstado" promptText="Estado..." prefWidth="150"/>
-        <Button text="🔍 Por Estado" onAction="#filtrarPorEstado"/>
-        <Button text="🏢 Por Proveedor" onAction="#filtrarPorProveedor"/>
-        <Button text="📅 Por Fechas" onAction="#filtrarPorFechas"/>
-        <Button text="↻ Todas" onAction="#cargarCompras"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="📄 Exportar PDF" onAction="#exportarPDF"
-                style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold;" prefWidth="130"/>
-    </HBox>
-
-    <Separator/>
-
-    <!-- Tabla principal de compras -->
-    <Label text="📊 Historial de Compras" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
-    <TableView fx:id="tblCompras" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="colFecha" text="Fecha" prefWidth="120"/>
-            <TableColumn fx:id="colTotal" text="Total (Q)" prefWidth="100"/>
-            <TableColumn fx:id="colEstado" text="Estado" prefWidth="120"/>
-            <TableColumn fx:id="colProveedor" text="ID Prov." prefWidth="80"/>
-            <TableColumn fx:id="colNombreProveedor" text="Proveedor" prefWidth="250"/>
-        </columns>
-    </TableView>
-
-    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold; -fx-font-size: 12;"/>
-
-</VBox>
+</ScrollPane>
