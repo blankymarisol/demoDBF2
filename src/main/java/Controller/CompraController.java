@@ -76,6 +76,13 @@ public class CompraController implements Initializable {
             }
         });
 
+        // Listener para cargar automáticamente el precio cuando se selecciona un producto
+        cmbProducto.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                txtPrecioUnitario.setText(newValue.getCostoUnitarioProducto().toString());
+            }
+        });
+
         // Configurar tabla de detalles
         tblDetalles.setItems(detallesCompraActual);
     }
@@ -342,6 +349,42 @@ public class CompraController implements Initializable {
         }
 
         try {
+            // Validar que hay suficiente stock antes de procesar
+            int idBodega = cmbBodega.getValue().getIdBodega();
+            List<String> productosInsuficientes = new ArrayList<>();
+
+            for (CompraDetalle detalle : detallesCompraActual) {
+                List<Inventario> inventarios = inventarioDAO.obtenerPorBodega(idBodega);
+                Inventario inventarioProducto = null;
+
+                for (Inventario inv : inventarios) {
+                    if (inv.getIdProducto() == detalle.getIdProducto()) {
+                        inventarioProducto = inv;
+                        break;
+                    }
+                }
+
+                if (inventarioProducto == null) {
+                    Producto prod = productoDAO.obtenerPorId(detalle.getIdProducto());
+                    productosInsuficientes.add(prod.getNombreProducto() + " (no existe en inventario)");
+                } else if (inventarioProducto.getCantidadInventario() < detalle.getCantidadDetalle()) {
+                    Producto prod = productoDAO.obtenerPorId(detalle.getIdProducto());
+                    productosInsuficientes.add(prod.getNombreProducto() +
+                            " (disponible: " + inventarioProducto.getCantidadInventario() +
+                            ", solicitado: " + detalle.getCantidadDetalle() + ")");
+                }
+            }
+
+            if (!productosInsuficientes.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Stock Insuficiente");
+                alert.setHeaderText("Los siguientes productos no tienen stock suficiente:");
+                alert.setContentText(String.join("\n", productosInsuficientes));
+                alert.showAndWait();
+                return;
+            }
+
+            // Crear la compra
             Compra compra = new Compra();
             compra.setFechaCompra(Date.valueOf(dpFechaCompra.getValue()));
             compra.setTotalCompra(new BigDecimal(txtTotal.getText().trim()));
@@ -352,8 +395,7 @@ public class CompraController implements Initializable {
             List<CompraDetalle> detalles = new ArrayList<>(detallesCompraActual);
 
             if (compraDAO.insertarCompraCompleta(compra, detalles)) {
-                // Procesar cada producto: descontar del inventario y registrar movimiento
-                int idBodega = cmbBodega.getValue().getIdBodega();
+                // Procesar cada producto: descontar del inventario, del stock y registrar movimiento
                 int idUsuario = cmbUsuario.getValue().getIdUsuario();
                 String observacion = txtObservacion.getText().trim();
                 String referencia = txtReferencia.getText().trim();
@@ -374,18 +416,24 @@ public class CompraController implements Initializable {
 
                     if (inventarioProducto != null) {
                         // Descontar del inventario
-                        int cantidadActual = inventarioProducto.getCantidadInventario();
-                        int nuevaCantidad = cantidadActual - detalle.getCantidadDetalle();
+                        int cantidadActualInventario = inventarioProducto.getCantidadInventario();
+                        int nuevaCantidadInventario = cantidadActualInventario - detalle.getCantidadDetalle();
 
-                        if (nuevaCantidad < 0) {
-                            mostrarMensaje("⚠ Advertencia: Stock insuficiente para " +
-                                            productoDAO.obtenerPorId(detalle.getIdProducto()).getNombreProducto(),
-                                    "orange");
-                            nuevaCantidad = 0; // No permitir negativos
-                        }
-
-                        inventarioProducto.setCantidadInventario(nuevaCantidad);
+                        inventarioProducto.setCantidadInventario(nuevaCantidadInventario);
                         inventarioDAO.actualizar(inventarioProducto);
+
+                        System.out.println("✓ Inventario actualizado - Producto ID: " + detalle.getIdProducto() +
+                                " - Nueva cantidad: " + nuevaCantidadInventario);
+
+                        // Descontar del stock del producto
+                        Producto producto = productoDAO.obtenerPorId(detalle.getIdProducto());
+                        if (producto != null) {
+                            int nuevoStockProducto = producto.getStockProducto() - detalle.getCantidadDetalle();
+                            productoDAO.actualizarStock(detalle.getIdProducto(), nuevoStockProducto);
+
+                            System.out.println("✓ Stock del producto actualizado: " + producto.getNombreProducto() +
+                                    " - Nuevo stock: " + nuevoStockProducto);
+                        }
 
                         // Registrar movimiento de SALIDA
                         MovimientoInventario movimiento = new MovimientoInventario();
@@ -400,17 +448,17 @@ public class CompraController implements Initializable {
 
                         if (!movimientoDAO.insertar(movimiento)) {
                             todosMovimientosExitosos = false;
-                            System.err.println("Error al registrar movimiento para producto ID: " +
+                            System.err.println("✗ Error al registrar movimiento para producto ID: " +
                                     detalle.getIdProducto());
                         }
                     } else {
-                        mostrarMensaje("⚠ Advertencia: Producto no encontrado en inventario de la bodega", "orange");
+                        mostrarMensaje("⚠ Error: Producto no encontrado en inventario", "red");
                         todosMovimientosExitosos = false;
                     }
                 }
 
                 if (todosMovimientosExitosos) {
-                    mostrarMensaje("✓ Compra guardada, inventario actualizado y movimientos registrados - ID: " +
+                    mostrarMensaje("✓ Compra guardada exitosamente - Inventario y stock actualizados - ID: " +
                             compra.getIdCompra(), "green");
                 } else {
                     mostrarMensaje("⚠ Compra guardada pero hubo errores en algunos movimientos", "orange");

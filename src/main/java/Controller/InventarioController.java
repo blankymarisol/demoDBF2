@@ -187,6 +187,15 @@ public class InventarioController implements Initializable {
                 }
             }
 
+            // Actualizar el stock en la tabla de productos
+            Producto producto = productoDAO.obtenerPorId(idProducto);
+            if (producto != null) {
+                int nuevoStockProducto = producto.getStockProducto() + cantidad;
+                productoDAO.actualizarStock(idProducto, nuevoStockProducto);
+                System.out.println("✓ Stock del producto actualizado: " + producto.getNombreProducto() +
+                        " - Nuevo stock: " + nuevoStockProducto);
+            }
+
             if (inventarioExistente != null) {
                 // Actualizar inventario existente
                 int nuevaCantidad = inventarioExistente.getCantidadInventario() + cantidad;
@@ -198,7 +207,7 @@ public class InventarioController implements Initializable {
                     registrarMovimiento("ENTRADA", cantidad, inventarioExistente.getIdInventario(),
                             idUsuario, txtObservacion.getText().trim(), txtReferencia.getText().trim());
 
-                    mostrarMensaje("✓ Inventario actualizado y movimiento registrado", "green");
+                    mostrarMensaje("✓ Inventario y stock del producto actualizados - Movimiento registrado", "green");
                     cargarInventarios();
                     limpiarCampos();
                 } else {
@@ -217,7 +226,7 @@ public class InventarioController implements Initializable {
                     registrarMovimiento("ENTRADA", cantidad, inventario.getIdInventario(),
                             idUsuario, txtObservacion.getText().trim(), txtReferencia.getText().trim());
 
-                    mostrarMensaje("✓ Inventario creado y movimiento registrado", "green");
+                    mostrarMensaje("✓ Inventario creado, stock actualizado y movimiento registrado", "green");
                     cargarInventarios();
                     limpiarCampos();
                 } else {

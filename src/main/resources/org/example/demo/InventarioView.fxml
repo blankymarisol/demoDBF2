@@ -72,8 +72,15 @@
 
     <!-- Información importante -->
     <HBox style="-fx-background-color: #d4edda; -fx-padding: 10; -fx-border-radius: 5;">
-        <Label text="ℹ️ Nota: Cada entrada al inventario se registra automáticamente como un MOVIMIENTO de tipo ENTRADA"
-               style="-fx-text-fill: #155724; -fx-font-weight: bold;"/>
+        <VBox spacing="3">
+            <Label text="ℹ️ IMPORTANTE:" style="-fx-text-fill: #155724; -fx-font-weight: bold;"/>
+            <Label text="• Cada entrada al inventario se registra automáticamente como un MOVIMIENTO de tipo ENTRADA"
+                   style="-fx-text-fill: #155724;"/>
+            <Label text="• La cantidad ingresada se SUMA al inventario de la bodega seleccionada"
+                   style="-fx-text-fill: #155724;"/>
+            <Label text="• La cantidad ingresada también se SUMA al stock del producto"
+                   style="-fx-text-fill: #155724; -fx-font-weight: bold;"/>
+        </VBox>
     </HBox>
 
     <!-- Tabla de inventarios -->

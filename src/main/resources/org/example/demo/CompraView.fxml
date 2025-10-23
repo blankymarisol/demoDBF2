@@ -61,7 +61,8 @@
 
             <Label text="Precio Unitario:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
             <TextField fx:id="txtPrecioUnitario" GridPane.columnIndex="1" GridPane.rowIndex="1"
-                       promptText="0.00" prefWidth="150"/>
+                       promptText="Se carga automáticamente" prefWidth="150" editable="false"
+                       style="-fx-background-color: #ecf0f1;"/>
 
             <HBox spacing="10" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.columnSpan="2" alignment="CENTER_LEFT">
                 <Button text="➕ Agregar" onAction="#agregarProducto" prefWidth="120"
@@ -90,7 +91,11 @@
             <Label text="⚠️ IMPORTANTE:" style="-fx-text-fill: #856404; -fx-font-weight: bold; -fx-font-size: 12;"/>
             <Label text="• Al guardar una compra, se registrará automáticamente un MOVIMIENTO de tipo SALIDA"
                    style="-fx-text-fill: #856404;"/>
-            <Label text="• La cantidad comprada se descontará del inventario de la bodega seleccionada"
+            <Label text="• La cantidad comprada se descontará del INVENTARIO de la bodega seleccionada"
+                   style="-fx-text-fill: #856404;"/>
+            <Label text="• La cantidad comprada también se descontará del STOCK del producto"
+                   style="-fx-text-fill: #856404; -fx-font-weight: bold;"/>
+            <Label text="• El precio unitario se carga automáticamente del costo del producto"
                    style="-fx-text-fill: #856404;"/>
             <Label text="• Las compras NO pueden ser eliminadas una vez guardadas"
                    style="-fx-text-fill: #856404; -fx-font-weight: bold;"/>
