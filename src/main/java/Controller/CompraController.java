@@ -9,8 +9,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import model.*;
 import util.PDFGenerator;
 
@@ -29,8 +27,10 @@ public class CompraController implements Initializable {
     // Campos del formulario principal
     @FXML private DatePicker dpFechaCompra;
     @FXML private ComboBox<Proveedor> cmbProveedor;
+    @FXML private ComboBox<Usuario> cmbUsuario;
+    @FXML private ComboBox<Bodega> cmbBodega;
     @FXML private ComboBox<String> cmbEstado, cmbFiltroEstado;
-    @FXML private TextField txtTotal;
+    @FXML private TextField txtTotal, txtObservacion, txtReferencia;
     @FXML private Label lblMensaje;
 
     // Tabla principal de compras
@@ -55,6 +55,10 @@ public class CompraController implements Initializable {
     private CompraDAO compraDAO = new CompraDAO();
     private ProveedorDAO proveedorDAO = new ProveedorDAO();
     private ProductoDAO productoDAO = new ProductoDAO();
+    private UsuarioDAO usuarioDAO = new UsuarioDAO();
+    private BodegaDAO bodegaDAO = new BodegaDAO();
+    private InventarioDAO inventarioDAO = new InventarioDAO();
+    private MovimientoInventarioDAO movimientoDAO = new MovimientoInventarioDAO();
 
     private Compra compraSeleccionada;
     private ObservableList<CompraDetalle> detallesCompraActual = FXCollections.observableArrayList();
@@ -69,7 +73,6 @@ public class CompraController implements Initializable {
         tblCompras.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 compraSeleccionada = newSelection;
-                cargarDetallesCompra(newSelection.getIdCompra());
             }
         });
 
@@ -121,6 +124,34 @@ public class CompraController implements Initializable {
             }
             @Override
             public Proveedor fromString(String string) {
+                return null;
+            }
+        });
+
+        // Cargar usuarios
+        List<Usuario> usuarios = usuarioDAO.obtenerTodos();
+        cmbUsuario.setItems(FXCollections.observableArrayList(usuarios));
+        cmbUsuario.setConverter(new javafx.util.StringConverter<Usuario>() {
+            @Override
+            public String toString(Usuario u) {
+                return u != null ? u.getNombreUsuario() + " (" + u.getRolUsuario() + ")" : "";
+            }
+            @Override
+            public Usuario fromString(String string) {
+                return null;
+            }
+        });
+
+        // Cargar bodegas
+        List<Bodega> bodegas = bodegaDAO.obtenerTodas();
+        cmbBodega.setItems(FXCollections.observableArrayList(bodegas));
+        cmbBodega.setConverter(new javafx.util.StringConverter<Bodega>() {
+            @Override
+            public String toString(Bodega b) {
+                return b != null ? b.getNombreBodega() : "";
+            }
+            @Override
+            public Bodega fromString(String string) {
                 return null;
             }
         });
@@ -300,22 +331,101 @@ public class CompraController implements Initializable {
             return;
         }
 
-        Compra compra = new Compra();
-        compra.setFechaCompra(Date.valueOf(dpFechaCompra.getValue()));
-        compra.setTotalCompra(new BigDecimal(txtTotal.getText().trim()));
-        compra.setEstadoCompra(cmbEstado.getValue());
-        compra.setIdProveedor(cmbProveedor.getValue().getIdProveedor());
+        if (cmbBodega.getValue() == null) {
+            mostrarMensaje("✗ Debe seleccionar una bodega", "red");
+            return;
+        }
 
-        // Guardar compra con detalles (transacción)
-        List<CompraDetalle> detalles = new ArrayList<>(detallesCompraActual);
+        if (cmbUsuario.getValue() == null) {
+            mostrarMensaje("✗ Debe seleccionar un usuario", "red");
+            return;
+        }
 
-        if (compraDAO.insertarCompraCompleta(compra, detalles)) {
-            mostrarMensaje("✓ Compra guardada exitosamente con ID: " + compra.getIdCompra(), "green");
-            cargarCompras();
-            limpiarCampos();
-            detallesCompraActual.clear();
-        } else {
-            mostrarMensaje("✗ Error al guardar la compra", "red");
+        try {
+            Compra compra = new Compra();
+            compra.setFechaCompra(Date.valueOf(dpFechaCompra.getValue()));
+            compra.setTotalCompra(new BigDecimal(txtTotal.getText().trim()));
+            compra.setEstadoCompra(cmbEstado.getValue());
+            compra.setIdProveedor(cmbProveedor.getValue().getIdProveedor());
+
+            // Guardar compra con detalles (transacción)
+            List<CompraDetalle> detalles = new ArrayList<>(detallesCompraActual);
+
+            if (compraDAO.insertarCompraCompleta(compra, detalles)) {
+                // Procesar cada producto: descontar del inventario y registrar movimiento
+                int idBodega = cmbBodega.getValue().getIdBodega();
+                int idUsuario = cmbUsuario.getValue().getIdUsuario();
+                String observacion = txtObservacion.getText().trim();
+                String referencia = txtReferencia.getText().trim();
+
+                boolean todosMovimientosExitosos = true;
+
+                for (CompraDetalle detalle : detalles) {
+                    // Buscar inventario del producto en la bodega seleccionada
+                    List<Inventario> inventarios = inventarioDAO.obtenerPorBodega(idBodega);
+                    Inventario inventarioProducto = null;
+
+                    for (Inventario inv : inventarios) {
+                        if (inv.getIdProducto() == detalle.getIdProducto()) {
+                            inventarioProducto = inv;
+                            break;
+                        }
+                    }
+
+                    if (inventarioProducto != null) {
+                        // Descontar del inventario
+                        int cantidadActual = inventarioProducto.getCantidadInventario();
+                        int nuevaCantidad = cantidadActual - detalle.getCantidadDetalle();
+
+                        if (nuevaCantidad < 0) {
+                            mostrarMensaje("⚠ Advertencia: Stock insuficiente para " +
+                                            productoDAO.obtenerPorId(detalle.getIdProducto()).getNombreProducto(),
+                                    "orange");
+                            nuevaCantidad = 0; // No permitir negativos
+                        }
+
+                        inventarioProducto.setCantidadInventario(nuevaCantidad);
+                        inventarioDAO.actualizar(inventarioProducto);
+
+                        // Registrar movimiento de SALIDA
+                        MovimientoInventario movimiento = new MovimientoInventario();
+                        movimiento.setTipoMovimiento("SALIDA");
+                        movimiento.setCantidadMovimiento(detalle.getCantidadDetalle());
+                        movimiento.setObservacionMovimiento(observacion.isEmpty() ?
+                                "Compra #" + compra.getIdCompra() : observacion);
+                        movimiento.setReferenciaMovimiento(referencia.isEmpty() ?
+                                "COMPRA-" + compra.getIdCompra() : referencia);
+                        movimiento.setIdInventario(inventarioProducto.getIdInventario());
+                        movimiento.setIdUsuario(idUsuario);
+
+                        if (!movimientoDAO.insertar(movimiento)) {
+                            todosMovimientosExitosos = false;
+                            System.err.println("Error al registrar movimiento para producto ID: " +
+                                    detalle.getIdProducto());
+                        }
+                    } else {
+                        mostrarMensaje("⚠ Advertencia: Producto no encontrado en inventario de la bodega", "orange");
+                        todosMovimientosExitosos = false;
+                    }
+                }
+
+                if (todosMovimientosExitosos) {
+                    mostrarMensaje("✓ Compra guardada, inventario actualizado y movimientos registrados - ID: " +
+                            compra.getIdCompra(), "green");
+                } else {
+                    mostrarMensaje("⚠ Compra guardada pero hubo errores en algunos movimientos", "orange");
+                }
+
+                cargarCompras();
+                limpiarCampos();
+                detallesCompraActual.clear();
+            } else {
+                mostrarMensaje("✗ Error al guardar la compra", "red");
+            }
+
+        } catch (Exception e) {
+            mostrarMensaje("✗ Error: " + e.getMessage(), "red");
+            e.printStackTrace();
         }
     }
 
@@ -341,63 +451,6 @@ public class CompraController implements Initializable {
                 mostrarMensaje("✗ Error al actualizar el estado", "red");
             }
         });
-    }
-
-    @FXML
-    private void eliminarCompra() {
-        if (compraSeleccionada == null) {
-            mostrarMensaje("✗ Seleccione una compra de la tabla", "red");
-            return;
-        }
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmar eliminación");
-        alert.setHeaderText("¿Está seguro de eliminar esta compra?");
-        alert.setContentText("ID: " + compraSeleccionada.getIdCompra() +
-                "\nTotal: Q" + compraSeleccionada.getTotalCompra() +
-                "\nEsta acción no se puede deshacer.");
-
-        if (alert.showAndWait().get() == ButtonType.OK) {
-            if (compraDAO.eliminar(compraSeleccionada.getIdCompra())) {
-                mostrarMensaje("✓ Compra eliminada", "green");
-                cargarCompras();
-                limpiarCampos();
-                detallesCompraActual.clear();
-            } else {
-                mostrarMensaje("✗ Error al eliminar la compra", "red");
-            }
-        }
-    }
-
-    @FXML
-    private void verDetalles() {
-        if (compraSeleccionada == null) {
-            mostrarMensaje("✗ Seleccione una compra de la tabla", "red");
-            return;
-        }
-
-        cargarDetallesCompra(compraSeleccionada.getIdCompra());
-
-        Proveedor proveedor = proveedorDAO.obtenerPorId(compraSeleccionada.getIdProveedor());
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Detalles de la Compra");
-        alert.setHeaderText("Compra ID: " + compraSeleccionada.getIdCompra());
-
-        String contenido = "Fecha: " + compraSeleccionada.getFechaCompra() + "\n" +
-                "Proveedor: " + (proveedor != null ? proveedor.getNombreProveedor() : "N/A") + "\n" +
-                "Estado: " + compraSeleccionada.getEstadoCompra() + "\n" +
-                "Total: Q" + compraSeleccionada.getTotalCompra() + "\n\n" +
-                "Productos: " + detallesCompraActual.size();
-
-        alert.setContentText(contenido);
-        alert.showAndWait();
-    }
-
-    private void cargarDetallesCompra(int idCompra) {
-        List<CompraDetalle> detalles = compraDAO.obtenerDetalles(idCompra);
-        detallesCompraActual.clear();
-        detallesCompraActual.addAll(detalles);
     }
 
     @FXML
@@ -427,8 +480,12 @@ public class CompraController implements Initializable {
     private void limpiarCampos() {
         dpFechaCompra.setValue(LocalDate.now());
         cmbProveedor.setValue(null);
+        cmbUsuario.setValue(null);
+        cmbBodega.setValue(null);
         cmbEstado.setValue("PENDIENTE");
         txtTotal.setText("0.00");
+        txtObservacion.clear();
+        txtReferencia.clear();
         limpiarCamposProducto();
         compraSeleccionada = null;
         tblCompras.getSelectionModel().clearSelection();
@@ -444,8 +501,9 @@ public class CompraController implements Initializable {
 
     private boolean validarCamposCompra() {
         if (dpFechaCompra.getValue() == null || cmbProveedor.getValue() == null ||
-                cmbEstado.getValue() == null) {
-            mostrarMensaje("✗ Complete todos los campos de la compra", "red");
+                cmbEstado.getValue() == null || cmbBodega.getValue() == null ||
+                cmbUsuario.getValue() == null) {
+            mostrarMensaje("✗ Complete todos los campos obligatorios de la compra", "red");
             return false;
         }
         return true;

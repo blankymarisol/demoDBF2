@@ -19,9 +19,10 @@ import java.util.ResourceBundle;
 
 public class InventarioController implements Initializable {
 
-    @FXML private TextField txtCantidad, txtPrecioVenta;
+    @FXML private TextField txtCantidad, txtPrecioVenta, txtObservacion, txtReferencia;
     @FXML private ComboBox<Bodega> cmbBodega, cmbFiltroBodega;
     @FXML private ComboBox<Producto> cmbProducto;
+    @FXML private ComboBox<Usuario> cmbUsuario;
     @FXML private TableView<Inventario> tblInventarios;
     @FXML private TableColumn<Inventario, Integer> colId, colCantidad, colBodega, colProducto;
     @FXML private TableColumn<Inventario, BigDecimal> colPrecioVenta;
@@ -31,6 +32,8 @@ public class InventarioController implements Initializable {
     private InventarioDAO inventarioDAO = new InventarioDAO();
     private BodegaDAO bodegaDAO = new BodegaDAO();
     private ProductoDAO productoDAO = new ProductoDAO();
+    private UsuarioDAO usuarioDAO = new UsuarioDAO();
+    private MovimientoInventarioDAO movimientoDAO = new MovimientoInventarioDAO();
     private Inventario inventarioSeleccionado;
 
     @Override
@@ -57,6 +60,7 @@ public class InventarioController implements Initializable {
     }
 
     private void cargarComboBoxes() {
+        // Cargar bodegas
         List<Bodega> bodegas = bodegaDAO.obtenerTodas();
         cmbBodega.setItems(FXCollections.observableArrayList(bodegas));
         cmbFiltroBodega.setItems(FXCollections.observableArrayList(bodegas));
@@ -83,6 +87,7 @@ public class InventarioController implements Initializable {
             }
         });
 
+        // Cargar productos
         List<Producto> productos = productoDAO.obtenerTodos();
         cmbProducto.setItems(FXCollections.observableArrayList(productos));
         cmbProducto.setConverter(new javafx.util.StringConverter<Producto>() {
@@ -92,6 +97,20 @@ public class InventarioController implements Initializable {
             }
             @Override
             public Producto fromString(String string) {
+                return null;
+            }
+        });
+
+        // Cargar usuarios
+        List<Usuario> usuarios = usuarioDAO.obtenerTodos();
+        cmbUsuario.setItems(FXCollections.observableArrayList(usuarios));
+        cmbUsuario.setConverter(new javafx.util.StringConverter<Usuario>() {
+            @Override
+            public String toString(Usuario u) {
+                return u != null ? u.getNombreUsuario() + " (" + u.getRolUsuario() + ")" : "";
+            }
+            @Override
+            public Usuario fromString(String string) {
                 return null;
             }
         });
@@ -143,27 +162,72 @@ public class InventarioController implements Initializable {
     private void nuevoInventario() {
         limpiarCampos();
         inventarioSeleccionado = null;
-        lblMensaje.setText("Nuevo inventario - complete los campos");
+        lblMensaje.setText("Nueva entrada de inventario - complete los campos");
     }
 
     @FXML
     private void guardarInventario() {
         if (!validarCampos()) return;
 
-        Inventario inventario = new Inventario();
-        inventario.setCantidadInventario(Integer.parseInt(txtCantidad.getText().trim()));
-        inventario.setPrecioVentaInventario(new BigDecimal(txtPrecioVenta.getText().trim()));
-        inventario.setIdBodega(cmbBodega.getValue().getIdBodega());
-        inventario.setIdProducto(cmbProducto.getValue().getIdProducto());
+        try {
+            int cantidad = Integer.parseInt(txtCantidad.getText().trim());
+            BigDecimal precioVenta = new BigDecimal(txtPrecioVenta.getText().trim());
+            int idBodega = cmbBodega.getValue().getIdBodega();
+            int idProducto = cmbProducto.getValue().getIdProducto();
+            int idUsuario = cmbUsuario.getValue().getIdUsuario();
 
-        if (inventarioDAO.insertar(inventario)) {
-            lblMensaje.setText("✓ Inventario guardado exitosamente");
-            lblMensaje.setStyle("-fx-text-fill: green;");
-            cargarInventarios();
-            limpiarCampos();
-        } else {
-            lblMensaje.setText("✗ Error al guardar el inventario");
-            lblMensaje.setStyle("-fx-text-fill: red;");
+            // Verificar si ya existe inventario para este producto en esta bodega
+            List<Inventario> inventariosExistentes = inventarioDAO.obtenerPorBodega(idBodega);
+            Inventario inventarioExistente = null;
+
+            for (Inventario inv : inventariosExistentes) {
+                if (inv.getIdProducto() == idProducto) {
+                    inventarioExistente = inv;
+                    break;
+                }
+            }
+
+            if (inventarioExistente != null) {
+                // Actualizar inventario existente
+                int nuevaCantidad = inventarioExistente.getCantidadInventario() + cantidad;
+                inventarioExistente.setCantidadInventario(nuevaCantidad);
+                inventarioExistente.setPrecioVentaInventario(precioVenta);
+
+                if (inventarioDAO.actualizar(inventarioExistente)) {
+                    // Registrar movimiento de ENTRADA
+                    registrarMovimiento("ENTRADA", cantidad, inventarioExistente.getIdInventario(),
+                            idUsuario, txtObservacion.getText().trim(), txtReferencia.getText().trim());
+
+                    mostrarMensaje("✓ Inventario actualizado y movimiento registrado", "green");
+                    cargarInventarios();
+                    limpiarCampos();
+                } else {
+                    mostrarMensaje("✗ Error al actualizar el inventario", "red");
+                }
+            } else {
+                // Crear nuevo inventario
+                Inventario inventario = new Inventario();
+                inventario.setCantidadInventario(cantidad);
+                inventario.setPrecioVentaInventario(precioVenta);
+                inventario.setIdBodega(idBodega);
+                inventario.setIdProducto(idProducto);
+
+                if (inventarioDAO.insertar(inventario)) {
+                    // Registrar movimiento de ENTRADA
+                    registrarMovimiento("ENTRADA", cantidad, inventario.getIdInventario(),
+                            idUsuario, txtObservacion.getText().trim(), txtReferencia.getText().trim());
+
+                    mostrarMensaje("✓ Inventario creado y movimiento registrado", "green");
+                    cargarInventarios();
+                    limpiarCampos();
+                } else {
+                    mostrarMensaje("✗ Error al crear el inventario", "red");
+                }
+            }
+
+        } catch (Exception e) {
+            mostrarMensaje("✗ Error: " + e.getMessage(), "red");
+            e.printStackTrace();
         }
     }
 
@@ -177,12 +241,26 @@ public class InventarioController implements Initializable {
 
         if (!validarCampos()) return;
 
-        inventarioSeleccionado.setCantidadInventario(Integer.parseInt(txtCantidad.getText().trim()));
+        int cantidadAnterior = inventarioSeleccionado.getCantidadInventario();
+        int cantidadNueva = Integer.parseInt(txtCantidad.getText().trim());
+        int diferencia = cantidadNueva - cantidadAnterior;
+
+        inventarioSeleccionado.setCantidadInventario(cantidadNueva);
         inventarioSeleccionado.setPrecioVentaInventario(new BigDecimal(txtPrecioVenta.getText().trim()));
         inventarioSeleccionado.setIdBodega(cmbBodega.getValue().getIdBodega());
         inventarioSeleccionado.setIdProducto(cmbProducto.getValue().getIdProducto());
 
         if (inventarioDAO.actualizar(inventarioSeleccionado)) {
+            // Registrar movimiento si hubo cambio en cantidad
+            if (diferencia != 0) {
+                String tipoMovimiento = diferencia > 0 ? "ENTRADA" : "AJUSTE";
+                registrarMovimiento(tipoMovimiento, Math.abs(diferencia),
+                        inventarioSeleccionado.getIdInventario(),
+                        cmbUsuario.getValue().getIdUsuario(),
+                        txtObservacion.getText().trim(),
+                        txtReferencia.getText().trim());
+            }
+
             lblMensaje.setText("✓ Inventario actualizado exitosamente");
             lblMensaje.setStyle("-fx-text-fill: green;");
             cargarInventarios();
@@ -219,6 +297,26 @@ public class InventarioController implements Initializable {
         }
     }
 
+    /**
+     * Registra un movimiento de inventario
+     */
+    private void registrarMovimiento(String tipo, int cantidad, int idInventario,
+                                     int idUsuario, String observacion, String referencia) {
+        MovimientoInventario movimiento = new MovimientoInventario();
+        movimiento.setTipoMovimiento(tipo);
+        movimiento.setCantidadMovimiento(cantidad);
+        movimiento.setObservacionMovimiento(observacion.isEmpty() ? null : observacion);
+        movimiento.setReferenciaMovimiento(referencia.isEmpty() ? null : referencia);
+        movimiento.setIdInventario(idInventario);
+        movimiento.setIdUsuario(idUsuario);
+
+        if (movimientoDAO.insertar(movimiento)) {
+            System.out.println("✓ Movimiento de " + tipo + " registrado correctamente");
+        } else {
+            System.err.println("✗ Error al registrar movimiento");
+        }
+    }
+
     @FXML
     private void exportarPDF() {
         if (tblInventarios.getItems().isEmpty()) {
@@ -249,8 +347,11 @@ public class InventarioController implements Initializable {
     private void limpiarCampos() {
         txtCantidad.clear();
         txtPrecioVenta.clear();
+        txtObservacion.clear();
+        txtReferencia.clear();
         cmbBodega.setValue(null);
         cmbProducto.setValue(null);
+        cmbUsuario.setValue(null);
         inventarioSeleccionado = null;
         tblInventarios.getSelectionModel().clearSelection();
         lblMensaje.setText("");
@@ -277,9 +378,9 @@ public class InventarioController implements Initializable {
 
     private boolean validarCampos() {
         if (txtCantidad.getText().trim().isEmpty() || txtPrecioVenta.getText().trim().isEmpty() ||
-                cmbBodega.getValue() == null || cmbProducto.getValue() == null) {
+                cmbBodega.getValue() == null || cmbProducto.getValue() == null || cmbUsuario.getValue() == null) {
 
-            lblMensaje.setText("✗ Todos los campos son obligatorios");
+            lblMensaje.setText("✗ Todos los campos son obligatorios (excepto observación y referencia)");
             lblMensaje.setStyle("-fx-text-fill: red;");
             return false;
         }
@@ -294,5 +395,10 @@ public class InventarioController implements Initializable {
         }
 
         return true;
+    }
+
+    private void mostrarMensaje(String mensaje, String color) {
+        lblMensaje.setText(mensaje);
+        lblMensaje.setStyle("-fx-text-fill: " + color + ";");
     }
 }
