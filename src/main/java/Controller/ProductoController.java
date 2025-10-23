@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.*;
 import util.PDFGenerator;
+import util.PermissionHelper;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -31,11 +32,15 @@ public class ProductoController implements Initializable {
     @FXML private TableColumn<Producto, Integer> colStock;
     @FXML private Label lblMensaje;
 
+    // Botones
+    @FXML private Button btnNuevo, btnGuardar, btnActualizar, btnEliminar, btnLimpiar;
+
     private ProductoDAO productoDAO = new ProductoDAO();
     private CategoriaDAO categoriaDAO = new CategoriaDAO();
     private TipoProductoDAO tipoProductoDAO = new TipoProductoDAO();
     private UnidadMedidaDAO unidadMedidaDAO = new UnidadMedidaDAO();
     private Producto productoSeleccionado;
+    private LoginSession session = LoginSession.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -43,12 +48,45 @@ public class ProductoController implements Initializable {
         cargarProductos();
         cargarComboBoxes();
 
+        // ========== APLICAR PERMISOS ==========
+        aplicarPermisos();
+
         tblProductos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 productoSeleccionado = newSelection;
                 llenarCampos(newSelection);
             }
         });
+    }
+
+    /**
+     * MÉTODO CRÍTICO: Aplica los permisos según el rol del usuario
+     */
+    private void aplicarPermisos() {
+        System.out.println("\n[PRODUCTOS] Aplicando permisos para: " + session.getRolActual());
+
+        // Botones de acción
+        btnGuardar.setDisable(!session.puedeAgregarProductos());
+        btnActualizar.setDisable(!session.puedeEditarProductos());
+        btnEliminar.setDisable(!session.puedeEliminarProductos());
+
+        // Campos de formulario (solo lectura si no puede editar)
+        boolean puedeEditar = session.puedeEditarProductos() || session.puedeAgregarProductos();
+        txtSku.setEditable(puedeEditar);
+        txtNombre.setEditable(puedeEditar);
+        txtDescripcion.setEditable(puedeEditar);
+        txtCosto.setEditable(puedeEditar);
+        txtDescuento.setEditable(puedeEditar);
+        txtImagenURL.setEditable(puedeEditar);
+        txtStock.setEditable(puedeEditar);
+        cmbEstado.setDisable(!puedeEditar);
+        cmbCategoria.setDisable(!puedeEditar);
+        cmbTipoProducto.setDisable(!puedeEditar);
+        cmbUnidadMedida.setDisable(!puedeEditar);
+
+        System.out.println("  - Guardar: " + (btnGuardar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Actualizar: " + (btnActualizar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Eliminar: " + (btnEliminar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
     }
 
     private void configurarTabla() {
@@ -136,6 +174,12 @@ public class ProductoController implements Initializable {
 
     @FXML
     private void guardarProducto() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeAgregarProductos()) {
+            PermissionHelper.mostrarErrorPermiso("agregar productos");
+            return;
+        }
+
         if (!validarCampos()) return;
 
         Producto producto = new Producto();
@@ -164,6 +208,12 @@ public class ProductoController implements Initializable {
 
     @FXML
     private void actualizarProducto() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeEditarProductos()) {
+            PermissionHelper.mostrarErrorPermiso("actualizar productos");
+            return;
+        }
+
         if (productoSeleccionado == null) {
             lblMensaje.setText("✗ Seleccione un producto de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -197,6 +247,12 @@ public class ProductoController implements Initializable {
 
     @FXML
     private void eliminarProducto() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeEliminarProductos()) {
+            PermissionHelper.mostrarErrorPermiso("eliminar productos");
+            return;
+        }
+
         if (productoSeleccionado == null) {
             lblMensaje.setText("✗ Seleccione un producto de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");

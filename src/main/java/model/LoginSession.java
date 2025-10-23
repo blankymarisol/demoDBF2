@@ -57,21 +57,33 @@ public class LoginSession {
         return "EMPLEADO".equalsIgnoreCase(getRolActual());
     }
 
+    public boolean esAdministrador() {
+        return "ADMINISTRADOR".equalsIgnoreCase(getRolActual());
+    }
+
+    public boolean esSupervisor() {
+        return "SUPERVISOR".equalsIgnoreCase(getRolActual());
+    }
+
+    public boolean esVendedor() {
+        return "VENDEDOR".equalsIgnoreCase(getRolActual());
+    }
+
     // Permisos específicos basados en roles
     public boolean puedeVerProductos() {
         return true; // Todos pueden ver
     }
 
     public boolean puedeAgregarProductos() {
-        return esPatron() || esGerente();
+        return esPatron() || esGerente() || esAdministrador();
     }
 
     public boolean puedeEditarProductos() {
-        return esPatron() || esGerente();
+        return esPatron() || esGerente() || esAdministrador();
     }
 
     public boolean puedeEliminarProductos() {
-        return esPatron() || esGerente();
+        return esPatron() || esGerente() || esAdministrador();
     }
 
     public boolean puedeVerInventarios() {
@@ -79,7 +91,7 @@ public class LoginSession {
     }
 
     public boolean puedeGestionarInventarios() {
-        return esPatron() || esGerente() || esBodeguero();
+        return esPatron() || esGerente() || esBodeguero() || esAdministrador() || esSupervisor();
     }
 
     public boolean puedeVerCompras() {
@@ -87,7 +99,7 @@ public class LoginSession {
     }
 
     public boolean puedeGestionarCompras() {
-        return esPatron() || esGerente() || esBodeguero();
+        return esPatron() || esGerente() || esBodeguero() || esAdministrador() || esSupervisor();
     }
 
     public boolean puedeVerProveedores() {
@@ -95,15 +107,15 @@ public class LoginSession {
     }
 
     public boolean puedeGestionarProveedores() {
-        return esPatron() || esGerente();
+        return esPatron() || esGerente() || esAdministrador();
     }
 
     public boolean puedeVerUsuarios() {
-        return esPatron() || esGerente();
+        return esPatron() || esGerente() || esAdministrador();
     }
 
     public boolean puedeGestionarUsuarios() {
-        return esPatron(); // Solo el patrón puede gestionar usuarios
+        return esPatron() || esAdministrador(); // Solo PATRON y ADMINISTRADOR
     }
 
     public boolean puedeVerBodegas() {
@@ -111,7 +123,7 @@ public class LoginSession {
     }
 
     public boolean puedeGestionarBodegas() {
-        return esPatron() || esGerente();
+        return esPatron() || esGerente() || esAdministrador();
     }
 
     public boolean puedeVerCategorias() {
@@ -119,7 +131,7 @@ public class LoginSession {
     }
 
     public boolean puedeGestionarCategorias() {
-        return esPatron() || esGerente();
+        return esPatron() || esGerente() || esAdministrador();
     }
 
     public boolean puedeExportarPDF() {

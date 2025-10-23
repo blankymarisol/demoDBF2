@@ -78,6 +78,9 @@ public class MainController implements Initializable {
                 case "GERENTE" -> "#3498db"; // Azul
                 case "BODEGUERO" -> "#f39c12"; // Naranja
                 case "EMPLEADO" -> "#95a5a6"; // Gris
+                case "ADMINISTRADOR" -> "#9b59b6"; // Púrpura
+                case "SUPERVISOR" -> "#16a085"; // Verde azulado
+                case "VENDEDOR" -> "#27ae60"; // Verde
                 default -> "#34495e";
             };
 
@@ -86,35 +89,58 @@ public class MainController implements Initializable {
     }
 
     private void configurarPermisos() {
-        // Configurar visibilidad y habilitación de botones según permisos
+        System.out.println("\n═══════════════════════════════════════");
+        System.out.println("    CONFIGURANDO PERMISOS DE ACCESO");
+        System.out.println("═══════════════════════════════════════");
+        System.out.println("Usuario: " + session.getUsuarioActual().getNombreUsuario());
+        System.out.println("Rol: " + session.getRolActual());
+        System.out.println("───────────────────────────────────────");
 
-        // Productos
-        btnProductos.setDisable(!session.puedeVerProductos());
+        // PRODUCTOS
+        boolean puedeVerProductos = session.puedeVerProductos();
+        btnProductos.setDisable(!puedeVerProductos);
+        System.out.println("Productos: " + (puedeVerProductos ? "✓ ACCESO" : "✗ BLOQUEADO"));
 
-        // Proveedores
-        btnProveedores.setDisable(!session.puedeVerProveedores());
+        // PROVEEDORES
+        boolean puedeVerProveedores = session.puedeVerProveedores();
+        btnProveedores.setDisable(!puedeVerProveedores);
+        System.out.println("Proveedores: " + (puedeVerProveedores ? "✓ ACCESO" : "✗ BLOQUEADO"));
 
-        // Usuarios (solo PATRON y GERENTE pueden ver)
-        btnUsuarios.setVisible(session.puedeVerUsuarios());
-        btnUsuarios.setManaged(session.puedeVerUsuarios());
+        // USUARIOS - Solo PATRON y GERENTE/ADMINISTRADOR
+        boolean puedeVerUsuarios = session.puedeVerUsuarios();
+        btnUsuarios.setVisible(puedeVerUsuarios);
+        btnUsuarios.setManaged(puedeVerUsuarios);
+        System.out.println("Usuarios: " + (puedeVerUsuarios ? "✓ ACCESO" : "✗ BLOQUEADO"));
 
-        // Inventarios
-        btnInventarios.setDisable(!session.puedeVerInventarios());
+        // INVENTARIOS
+        boolean puedeVerInventarios = session.puedeVerInventarios();
+        btnInventarios.setDisable(!puedeVerInventarios);
+        System.out.println("Inventarios: " + (puedeVerInventarios ? "✓ ACCESO" : "✗ BLOQUEADO"));
 
-        // Compras
-        btnCompras.setDisable(!session.puedeVerCompras());
+        // COMPRAS
+        boolean puedeVerCompras = session.puedeVerCompras();
+        btnCompras.setDisable(!puedeVerCompras);
+        System.out.println("Compras: " + (puedeVerCompras ? "✓ ACCESO" : "✗ BLOQUEADO"));
 
-        // Bodegas
-        btnBodegas.setDisable(!session.puedeVerBodegas());
+        // BODEGAS
+        boolean puedeVerBodegas = session.puedeVerBodegas();
+        btnBodegas.setDisable(!puedeVerBodegas);
+        System.out.println("Bodegas: " + (puedeVerBodegas ? "✓ ACCESO" : "✗ BLOQUEADO"));
 
-        // Categorías
-        btnCategorias.setDisable(!session.puedeVerCategorias());
+        // CATEGORÍAS
+        boolean puedeVerCategorias = session.puedeVerCategorias();
+        btnCategorias.setDisable(!puedeVerCategorias);
+        System.out.println("Categorías: " + (puedeVerCategorias ? "✓ ACCESO" : "✗ BLOQUEADO"));
 
-        // Tipos de Producto
-        btnTipoProductos.setDisable(!session.puedeVerCategorias());
+        // TIPOS DE PRODUCTO
+        btnTipoProductos.setDisable(!puedeVerCategorias);
+        System.out.println("Tipos Producto: " + (puedeVerCategorias ? "✓ ACCESO" : "✗ BLOQUEADO"));
 
-        // Unidades de Medida
-        btnUnidadMedidas.setDisable(!session.puedeVerCategorias());
+        // UNIDADES DE MEDIDA
+        btnUnidadMedidas.setDisable(!puedeVerCategorias);
+        System.out.println("Unidades Medida: " + (puedeVerCategorias ? "✓ ACCESO" : "✗ BLOQUEADO"));
+
+        System.out.println("═══════════════════════════════════════\n");
 
         // Mostrar mensaje de bienvenida personalizado
         String mensajeBienvenida = obtenerMensajeBienvenida();
@@ -122,11 +148,12 @@ public class MainController implements Initializable {
     }
 
     private String obtenerMensajeBienvenida() {
-        return switch (session.getRolActual().toUpperCase()) {
+        String rol = session.getRolActual().toUpperCase();
+        return switch (rol) {
             case "PATRON" -> "Bienvenido Patrón - Tienes control total del sistema";
-            case "GERENTE" -> "Bienvenido Gerente - Gestión operativa completa disponible";
-            case "BODEGUERO" -> "Bienvenido Bodeguero - Operaciones de inventario disponibles";
-            case "EMPLEADO" -> "Bienvenido Empleado - Modo consulta de reportes";
+            case "GERENTE", "ADMINISTRADOR" -> "Bienvenido - Gestión operativa completa disponible";
+            case "BODEGUERO", "SUPERVISOR" -> "Bienvenido - Operaciones de inventario disponibles";
+            case "EMPLEADO", "VENDEDOR" -> "Bienvenido - Modo consulta de reportes";
             default -> "Bienvenido al sistema";
         };
     }
@@ -134,7 +161,7 @@ public class MainController implements Initializable {
     @FXML
     private void abrirProductos() {
         if (!session.puedeVerProductos()) {
-            mostrarErrorPermiso();
+            mostrarErrorPermiso("ver productos");
             return;
         }
         cargarVista("/org/example/demo/ProductoView.fxml", "Gestión de Productos");
@@ -143,7 +170,7 @@ public class MainController implements Initializable {
     @FXML
     private void abrirProveedores() {
         if (!session.puedeVerProveedores()) {
-            mostrarErrorPermiso();
+            mostrarErrorPermiso("ver proveedores");
             return;
         }
         cargarVista("/org/example/demo/ProveedorView.fxml", "Gestión de Proveedores");
@@ -152,7 +179,7 @@ public class MainController implements Initializable {
     @FXML
     private void abrirUsuarios() {
         if (!session.puedeVerUsuarios()) {
-            mostrarErrorPermiso();
+            mostrarErrorPermiso("gestionar usuarios");
             return;
         }
         cargarVista("/org/example/demo/UsuarioView.fxml", "Gestión de Usuarios");
@@ -161,7 +188,7 @@ public class MainController implements Initializable {
     @FXML
     private void abrirInventarios() {
         if (!session.puedeVerInventarios()) {
-            mostrarErrorPermiso();
+            mostrarErrorPermiso("ver inventarios");
             return;
         }
         cargarVista("/org/example/demo/InventarioView.fxml", "Gestión de Inventarios");
@@ -170,7 +197,7 @@ public class MainController implements Initializable {
     @FXML
     private void abrirCompras() {
         if (!session.puedeVerCompras()) {
-            mostrarErrorPermiso();
+            mostrarErrorPermiso("ver compras");
             return;
         }
         cargarVista("/org/example/demo/CompraView.fxml", "Gestión de Compras");
@@ -179,7 +206,7 @@ public class MainController implements Initializable {
     @FXML
     private void abrirBodegas() {
         if (!session.puedeVerBodegas()) {
-            mostrarErrorPermiso();
+            mostrarErrorPermiso("ver bodegas");
             return;
         }
         cargarVista("/org/example/demo/BodegaView.fxml", "Gestión de Bodegas");
@@ -188,7 +215,7 @@ public class MainController implements Initializable {
     @FXML
     private void abrirCategorias() {
         if (!session.puedeVerCategorias()) {
-            mostrarErrorPermiso();
+            mostrarErrorPermiso("gestionar categorías");
             return;
         }
         cargarVista("/org/example/demo/CategoriaView.fxml", "Gestión de Categorías");
@@ -197,7 +224,7 @@ public class MainController implements Initializable {
     @FXML
     private void abrirTipoProductos() {
         if (!session.puedeVerCategorias()) {
-            mostrarErrorPermiso();
+            mostrarErrorPermiso("gestionar tipos de producto");
             return;
         }
         cargarVista("/org/example/demo/TipoProductoView.fxml", "Gestión de Tipos de Producto");
@@ -206,7 +233,7 @@ public class MainController implements Initializable {
     @FXML
     private void abrirUnidadMedidas() {
         if (!session.puedeVerCategorias()) {
-            mostrarErrorPermiso();
+            mostrarErrorPermiso("gestionar unidades de medida");
             return;
         }
         cargarVista("/org/example/demo/UnidadMedidaView.fxml", "Gestión de Unidades de Medida");
@@ -261,11 +288,11 @@ public class MainController implements Initializable {
         }
     }
 
-    private void mostrarErrorPermiso() {
+    private void mostrarErrorPermiso(String accion) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Permiso Denegado");
         alert.setHeaderText("No tiene permisos suficientes");
-        alert.setContentText("Su rol (" + session.getRolActual() + ") no tiene acceso a esta funcionalidad.");
+        alert.setContentText("Su rol (" + session.getRolActual() + ") no tiene acceso para " + accion + ".");
         alert.showAndWait();
     }
 
