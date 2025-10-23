@@ -7,8 +7,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import model.LoginSession;
 import model.Proveedor;
 import util.PDFGenerator;
+import util.PermissionHelper;
 
 import java.io.File;
 import java.net.URL;
@@ -23,13 +25,20 @@ public class ProveedorController implements Initializable {
     @FXML private TableColumn<Proveedor, String> colNombre, colTelefono, colCorreo, colDireccion, colNIT;
     @FXML private Label lblMensaje;
 
+    // Botones
+    @FXML private Button btnNuevo, btnGuardar, btnActualizar, btnEliminar, btnLimpiar;
+
     private ProveedorDAO proveedorDAO = new ProveedorDAO();
     private Proveedor proveedorSeleccionado;
+    private LoginSession session = LoginSession.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configurarTabla();
         cargarProveedores();
+
+        // ========== APLICAR PERMISOS ==========
+        aplicarPermisos();
 
         tblProveedores.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -37,6 +46,30 @@ public class ProveedorController implements Initializable {
                 llenarCampos(newSelection);
             }
         });
+    }
+
+    /**
+     * MÉTODO CRÍTICO: Aplica los permisos según el rol del usuario
+     */
+    private void aplicarPermisos() {
+        System.out.println("\n[PROVEEDORES] Aplicando permisos para: " + session.getRolActual());
+
+        // Botones de acción
+        btnGuardar.setDisable(!session.puedeGestionarProveedores());
+        btnActualizar.setDisable(!session.puedeGestionarProveedores());
+        btnEliminar.setDisable(!session.puedeGestionarProveedores());
+
+        // Campos de formulario (solo lectura si no puede editar)
+        boolean puedeEditar = session.puedeGestionarProveedores();
+        txtNombre.setEditable(puedeEditar);
+        txtTelefono.setEditable(puedeEditar);
+        txtCorreo.setEditable(puedeEditar);
+        txtDireccion.setEditable(puedeEditar);
+        txtNIT.setEditable(puedeEditar);
+
+        System.out.println("  - Guardar: " + (btnGuardar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Actualizar: " + (btnActualizar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Eliminar: " + (btnEliminar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
     }
 
     private void configurarTabla() {
@@ -78,6 +111,12 @@ public class ProveedorController implements Initializable {
 
     @FXML
     private void guardarProveedor() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarProveedores()) {
+            PermissionHelper.mostrarErrorPermiso("agregar proveedores");
+            return;
+        }
+
         if (!validarCampos()) return;
 
         Proveedor proveedor = new Proveedor();
@@ -100,6 +139,12 @@ public class ProveedorController implements Initializable {
 
     @FXML
     private void actualizarProveedor() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarProveedores()) {
+            PermissionHelper.mostrarErrorPermiso("actualizar proveedores");
+            return;
+        }
+
         if (proveedorSeleccionado == null) {
             lblMensaje.setText("✗ Seleccione un proveedor de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -127,6 +172,12 @@ public class ProveedorController implements Initializable {
 
     @FXML
     private void eliminarProveedor() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarProveedores()) {
+            PermissionHelper.mostrarErrorPermiso("eliminar proveedores");
+            return;
+        }
+
         if (proveedorSeleccionado == null) {
             lblMensaje.setText("✗ Seleccione un proveedor de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");

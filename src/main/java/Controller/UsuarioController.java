@@ -7,8 +7,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import model.LoginSession;
 import model.Usuario;
 import util.PDFGenerator;
+import util.PermissionHelper;
 
 import java.io.File;
 import java.net.URL;
@@ -25,8 +27,12 @@ public class UsuarioController implements Initializable {
     @FXML private TableColumn<Usuario, String> colNombreUsuario, colRol, colCorreo;
     @FXML private Label lblMensaje;
 
+    // Botones
+    @FXML private Button btnNuevo, btnGuardar, btnActualizar, btnEliminar, btnLimpiar;
+
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
     private Usuario usuarioSeleccionado;
+    private LoginSession session = LoginSession.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -34,12 +40,40 @@ public class UsuarioController implements Initializable {
         cargarComboBoxes();
         cargarUsuarios();
 
+        // ========== APLICAR PERMISOS ==========
+        aplicarPermisos();
+
         tblUsuarios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 usuarioSeleccionado = newSelection;
                 llenarCampos(newSelection);
             }
         });
+    }
+
+    /**
+     * MÉTODO CRÍTICO: Aplica los permisos según el rol del usuario
+     */
+    private void aplicarPermisos() {
+        System.out.println("\n[USUARIOS] Aplicando permisos para: " + session.getRolActual());
+
+        // Solo PATRON y ADMINISTRADOR pueden gestionar usuarios
+        boolean puedeGestionar = session.puedeGestionarUsuarios();
+
+        // Botones de acción
+        btnGuardar.setDisable(!puedeGestionar);
+        btnActualizar.setDisable(!puedeGestionar);
+        btnEliminar.setDisable(!puedeGestionar);
+
+        // Campos de formulario (solo lectura si no puede editar)
+        txtNombreUsuario.setEditable(puedeGestionar);
+        txtCorreo.setEditable(puedeGestionar);
+        txtContrasena.setEditable(puedeGestionar);
+        cmbRol.setDisable(!puedeGestionar);
+
+        System.out.println("  - Guardar: " + (btnGuardar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Actualizar: " + (btnActualizar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Eliminar: " + (btnEliminar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
     }
 
     private void configurarTabla() {
@@ -51,7 +85,7 @@ public class UsuarioController implements Initializable {
 
     private void cargarComboBoxes() {
         ObservableList<String> roles = FXCollections.observableArrayList(
-                "ADMINISTRADOR", "SUPERVISOR", "EMPLEADO", "VENDEDOR"
+                "ADMINISTRADOR", "SUPERVISOR", "EMPLEADO", "VENDEDOR", "PATRON", "GERENTE", "BODEGUERO"
         );
         cmbRol.setItems(roles);
         cmbFiltroRol.setItems(roles);
@@ -87,6 +121,12 @@ public class UsuarioController implements Initializable {
 
     @FXML
     private void guardarUsuario() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarUsuarios()) {
+            PermissionHelper.mostrarErrorPermiso("agregar usuarios");
+            return;
+        }
+
         if (!validarCampos()) return;
 
         Usuario usuario = new Usuario();
@@ -108,6 +148,12 @@ public class UsuarioController implements Initializable {
 
     @FXML
     private void actualizarUsuario() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarUsuarios()) {
+            PermissionHelper.mostrarErrorPermiso("actualizar usuarios");
+            return;
+        }
+
         if (usuarioSeleccionado == null) {
             lblMensaje.setText("✗ Seleccione un usuario de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -134,6 +180,12 @@ public class UsuarioController implements Initializable {
 
     @FXML
     private void eliminarUsuario() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarUsuarios()) {
+            PermissionHelper.mostrarErrorPermiso("eliminar usuarios");
+            return;
+        }
+
         if (usuarioSeleccionado == null) {
             lblMensaje.setText("✗ Seleccione un usuario de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");

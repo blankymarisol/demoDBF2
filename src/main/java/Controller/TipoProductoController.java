@@ -6,8 +6,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import model.LoginSession;
 import model.TipoProducto;
 import util.PDFGenerator;
+import util.PermissionHelper;
 
 import java.io.File;
 import java.net.URL;
@@ -21,14 +23,21 @@ public class TipoProductoController implements Initializable {
     @FXML private TableColumn<TipoProducto, String> colNombre;
     @FXML private Label lblMensaje;
 
+    // Botones
+    @FXML private Button btnNuevo, btnGuardar, btnActualizar, btnEliminar, btnLimpiar;
+
     private TipoProductoDAO dao = new TipoProductoDAO();
     private TipoProducto seleccionado;
+    private LoginSession session = LoginSession.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         colId.setCellValueFactory(new PropertyValueFactory<>("idTipoProducto"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombreTipoProducto"));
         cargar();
+
+        // ========== APLICAR PERMISOS ==========
+        aplicarPermisos();
 
         tblTipos.getSelectionModel().selectedItemProperty().addListener((obs, old, nuevo) -> {
             if (nuevo != null) {
@@ -38,17 +47,46 @@ public class TipoProductoController implements Initializable {
         });
     }
 
-    @FXML private void cargar() {
+    /**
+     * MÉTODO CRÍTICO: Aplica los permisos según el rol del usuario
+     */
+    private void aplicarPermisos() {
+        System.out.println("\n[TIPOS PRODUCTO] Aplicando permisos para: " + session.getRolActual());
+
+        // Botones de acción
+        btnGuardar.setDisable(!session.puedeGestionarCategorias());
+        btnActualizar.setDisable(!session.puedeGestionarCategorias());
+        btnEliminar.setDisable(!session.puedeGestionarCategorias());
+
+        // Campos de formulario (solo lectura si no puede editar)
+        boolean puedeEditar = session.puedeGestionarCategorias();
+        txtNombre.setEditable(puedeEditar);
+
+        System.out.println("  - Guardar: " + (btnGuardar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Actualizar: " + (btnActualizar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Eliminar: " + (btnEliminar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+    }
+
+    @FXML
+    private void cargar() {
         tblTipos.setItems(FXCollections.observableArrayList(dao.obtenerTodos()));
         lblMensaje.setText("Tipos cargados: " + tblTipos.getItems().size());
     }
 
-    @FXML private void nuevo() {
+    @FXML
+    private void nuevo() {
         limpiarCampos();
         lblMensaje.setText("Nuevo tipo - complete el campo");
     }
 
-    @FXML private void guardar() {
+    @FXML
+    private void guardar() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCategorias()) {
+            PermissionHelper.mostrarErrorPermiso("agregar tipos de producto");
+            return;
+        }
+
         if (txtNombre.getText().trim().isEmpty()) {
             lblMensaje.setText("✗ El nombre es obligatorio");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -69,7 +107,14 @@ public class TipoProductoController implements Initializable {
         }
     }
 
-    @FXML private void actualizar() {
+    @FXML
+    private void actualizar() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCategorias()) {
+            PermissionHelper.mostrarErrorPermiso("actualizar tipos de producto");
+            return;
+        }
+
         if (seleccionado == null) {
             lblMensaje.setText("✗ Seleccione un tipo");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -89,7 +134,14 @@ public class TipoProductoController implements Initializable {
         }
     }
 
-    @FXML private void eliminar() {
+    @FXML
+    private void eliminar() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCategorias()) {
+            PermissionHelper.mostrarErrorPermiso("eliminar tipos de producto");
+            return;
+        }
+
         if (seleccionado == null) {
             lblMensaje.setText("✗ Seleccione un tipo");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -135,7 +187,8 @@ public class TipoProductoController implements Initializable {
         }
     }
 
-    @FXML private void limpiarCampos() {
+    @FXML
+    private void limpiarCampos() {
         txtNombre.clear();
         seleccionado = null;
         tblTipos.getSelectionModel().clearSelection();

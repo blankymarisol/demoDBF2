@@ -6,8 +6,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import model.LoginSession;
 import model.UnidadMedida;
 import util.PDFGenerator;
+import util.PermissionHelper;
 
 import java.io.File;
 import java.net.URL;
@@ -21,8 +23,12 @@ public class UnidadMedidaController implements Initializable {
     @FXML private TableColumn<UnidadMedida, String> colNombre, colAbreviatura;
     @FXML private Label lblMensaje;
 
+    // Botones
+    @FXML private Button btnNuevo, btnGuardar, btnActualizar, btnEliminar, btnLimpiar;
+
     private UnidadMedidaDAO dao = new UnidadMedidaDAO();
     private UnidadMedida seleccionada;
+    private LoginSession session = LoginSession.getInstance();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -30,6 +36,9 @@ public class UnidadMedidaController implements Initializable {
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombreUnidadMedida"));
         colAbreviatura.setCellValueFactory(new PropertyValueFactory<>("abreviaturaUnidadMedida"));
         cargar();
+
+        // ========== APLICAR PERMISOS ==========
+        aplicarPermisos();
 
         tblUnidades.getSelectionModel().selectedItemProperty().addListener((obs, old, nueva) -> {
             if (nueva != null) {
@@ -40,18 +49,48 @@ public class UnidadMedidaController implements Initializable {
         });
     }
 
-    @FXML private void cargar() {
+    /**
+     * MÉTODO CRÍTICO: Aplica los permisos según el rol del usuario
+     */
+    private void aplicarPermisos() {
+        System.out.println("\n[UNIDADES MEDIDA] Aplicando permisos para: " + session.getRolActual());
+
+        // Botones de acción
+        btnGuardar.setDisable(!session.puedeGestionarCategorias());
+        btnActualizar.setDisable(!session.puedeGestionarCategorias());
+        btnEliminar.setDisable(!session.puedeGestionarCategorias());
+
+        // Campos de formulario (solo lectura si no puede editar)
+        boolean puedeEditar = session.puedeGestionarCategorias();
+        txtNombre.setEditable(puedeEditar);
+        txtAbreviatura.setEditable(puedeEditar);
+
+        System.out.println("  - Guardar: " + (btnGuardar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Actualizar: " + (btnActualizar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+        System.out.println("  - Eliminar: " + (btnEliminar.isDisabled() ? "BLOQUEADO" : "PERMITIDO"));
+    }
+
+    @FXML
+    private void cargar() {
         tblUnidades.setItems(FXCollections.observableArrayList(dao.obtenerTodas()));
         lblMensaje.setText("Unidades cargadas: " + tblUnidades.getItems().size());
     }
 
-    @FXML private void nuevo() {
+    @FXML
+    private void nuevo() {
         limpiarCampos();
         seleccionada = null;
         lblMensaje.setText("Nueva unidad de medida - complete los campos");
     }
 
-    @FXML private void guardar() {
+    @FXML
+    private void guardar() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCategorias()) {
+            PermissionHelper.mostrarErrorPermiso("agregar unidades de medida");
+            return;
+        }
+
         if (!validarCampos()) return;
 
         UnidadMedida unidad = new UnidadMedida();
@@ -69,7 +108,14 @@ public class UnidadMedidaController implements Initializable {
         }
     }
 
-    @FXML private void actualizar() {
+    @FXML
+    private void actualizar() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCategorias()) {
+            PermissionHelper.mostrarErrorPermiso("actualizar unidades de medida");
+            return;
+        }
+
         if (seleccionada == null) {
             lblMensaje.setText("✗ Seleccione una unidad de medida de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -92,7 +138,14 @@ public class UnidadMedidaController implements Initializable {
         }
     }
 
-    @FXML private void eliminar() {
+    @FXML
+    private void eliminar() {
+        // ========== VALIDAR PERMISO ==========
+        if (!session.puedeGestionarCategorias()) {
+            PermissionHelper.mostrarErrorPermiso("eliminar unidades de medida");
+            return;
+        }
+
         if (seleccionada == null) {
             lblMensaje.setText("✗ Seleccione una unidad de medida de la tabla");
             lblMensaje.setStyle("-fx-text-fill: red;");
@@ -143,7 +196,8 @@ public class UnidadMedidaController implements Initializable {
         }
     }
 
-    @FXML private void limpiarCampos() {
+    @FXML
+    private void limpiarCampos() {
         txtNombre.clear();
         txtAbreviatura.clear();
         seleccionada = null;
