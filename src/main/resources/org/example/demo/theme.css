@@ -42,9 +42,8 @@
     -fx-padding: 10 0 5 0;
 }
 
-/* ==================== BOTONES MODERNOS ==================== */
+/* ==================== BOTONES CON COLORES FIJOS - SIN ANIMACIONES ==================== */
 .button {
-    -fx-background-color: -secondary-color;
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: 600;
@@ -54,51 +53,30 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);
 }
 
-.button:hover {
-    -fx-background-color: #2980B9;
-    -fx-scale-x: 1.02;
-    -fx-scale-y: 1.02;
-}
-
-.button:pressed {
-    -fx-background-color: #21618C;
-}
-
-/* Variantes de botones */
+/* COLORES PERMANENTES - SIN HOVER */
 .btn-primary {
-    -fx-background-color: -secondary-color;
+    -fx-background-color: #3498DB;
+    -fx-text-fill: white;
 }
 
 .btn-success {
-    -fx-background-color: -success-color;
-}
-
-.btn-success:hover {
-    -fx-background-color: #229954;
+    -fx-background-color: #27AE60;
+    -fx-text-fill: white;
 }
 
 .btn-danger {
-    -fx-background-color: -danger-color;
-}
-
-.btn-danger:hover {
-    -fx-background-color: #C0392B;
+    -fx-background-color: #E74C3C;
+    -fx-text-fill: white;
 }
 
 .btn-warning {
-    -fx-background-color: -warning-color;
-}
-
-.btn-warning:hover {
-    -fx-background-color: #D68910;
+    -fx-background-color: #F39C12;
+    -fx-text-fill: white;
 }
 
 .btn-secondary {
     -fx-background-color: #95A5A6;
-}
-
-.btn-secondary:hover {
-    -fx-background-color: #7F8C8D;
+    -fx-text-fill: white;
 }
 
 .button:disabled {
@@ -225,7 +203,7 @@
     -fx-background-color: #95A5A6;
 }
 
-/* ==================== MENÚ LATERAL ==================== */
+/* ==================== MENÚ LATERAL - COLOR FIJO ==================== */
 .sidebar {
     -fx-background-color: linear-gradient(to bottom, #2C3E50 0%, #34495E 100%);
 }
@@ -237,10 +215,6 @@
     -fx-padding: 16 20;
     -fx-alignment: center-left;
     -fx-cursor: hand;
-}
-
-.menu-item:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* ==================== HEADER ==================== */
