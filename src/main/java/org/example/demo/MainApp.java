@@ -6,6 +6,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+
+// ATENCIÓN: NO TOCAR, FUNCIONA Y NO SABEMOS POR QUÉ
+//
+// Este fragmento de código fue escrito entre las 2 y 3 de la mañana,
+// bajo los efectos combinados de cafeina, desesperación y un bug que
+// solo se manifestaba cuando nadie lo estaba mirando.
+// No funciona si lo entiendes.
+// No lo entiendes si funciona.
+// Cualquier intento de refactorizar esto ha resultado en la invocación
+// de problemas dimensionales, loops infinitos y un extraño parpadeo en el
+// monitor que aun no puedo explicar.
+// Si necesitas cambiar esto, primero reza, luego haz una copia de seguridad,
+// y por último.. suerte.
+
 public class MainApp extends Application {
 
     @Override
