@@ -1,0 +1,308 @@
+/* ==================== VARIABLES DE COLOR ==================== */
+.root {
+    /* Colores principales */
+    -primary-color: #2C3E50;
+    -primary-dark: #1a252f;
+    -secondary-color: #3498DB;
+    -accent-color: #E74C3C;
+
+    /* Colores de estado */
+    -success-color: #27AE60;
+    -warning-color: #F39C12;
+    -danger-color: #E74C3C;
+    -info-color: #3498DB;
+
+    /* Colores neutros */
+    -background-light: #ECF0F1;
+    -background-white: #FFFFFF;
+    -text-dark: #2C3E50;
+    -text-light: #7F8C8D;
+    -border-color: #BDC3C7;
+
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* ==================== FONDO GENERAL ==================== */
+.root {
+    -fx-background-color: -background-light;
+}
+
+/* ==================== TÍTULOS Y ENCABEZADOS ==================== */
+.titulo-principal {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -primary-color;
+    -fx-padding: 15 0;
+}
+
+.titulo-seccion {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -primary-color;
+    -fx-padding: 10 0 5 0;
+}
+
+/* ==================== BOTONES MODERNOS ==================== */
+.button {
+    -fx-background-color: -secondary-color;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 24;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 2);
+}
+
+.button:hover {
+    -fx-background-color: #2980B9;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.button:pressed {
+    -fx-background-color: #21618C;
+}
+
+/* Variantes de botones */
+.btn-primary {
+    -fx-background-color: -secondary-color;
+}
+
+.btn-success {
+    -fx-background-color: -success-color;
+}
+
+.btn-success:hover {
+    -fx-background-color: #229954;
+}
+
+.btn-danger {
+    -fx-background-color: -danger-color;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #C0392B;
+}
+
+.btn-warning {
+    -fx-background-color: -warning-color;
+}
+
+.btn-warning:hover {
+    -fx-background-color: #D68910;
+}
+
+.btn-secondary {
+    -fx-background-color: #95A5A6;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #7F8C8D;
+}
+
+.button:disabled {
+    -fx-opacity: 0.5;
+    -fx-cursor: default;
+}
+
+/* ==================== CARDS ==================== */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+    -fx-padding: 20;
+}
+
+/* ==================== CAMPOS DE ENTRADA ==================== */
+.text-field, .text-area, .password-field {
+    -fx-background-color: white;
+    -fx-border-color: -border-color;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10 12;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .text-area:focused, .password-field:focused {
+    -fx-border-color: -secondary-color;
+    -fx-border-width: 2;
+}
+
+.text-field:disabled, .text-area:disabled {
+    -fx-background-color: #F8F9FA;
+    -fx-opacity: 0.7;
+}
+
+/* ==================== COMBOBOX ==================== */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: -border-color;
+    -fx-border-radius: 6;
+}
+
+.combo-box:focused {
+    -fx-border-color: -secondary-color;
+    -fx-border-width: 2;
+}
+
+/* ==================== TABLAS ==================== */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: -border-color;
+    -fx-border-radius: 6;
+}
+
+.table-view .column-header {
+    -fx-background-color: linear-gradient(to bottom, #34495E 0%, #2C3E50 100%);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 12 10;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #F8F9FA;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #3498DB;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #EBF5FB;
+    -fx-cursor: hand;
+}
+
+/* ==================== LABELS ==================== */
+.label-form {
+    -fx-text-fill: -text-dark;
+    -fx-font-weight: 600;
+    -fx-padding: 0 0 5 0;
+}
+
+.mensaje-exito {
+    -fx-text-fill: -success-color;
+    -fx-font-weight: bold;
+}
+
+.mensaje-error {
+    -fx-text-fill: -danger-color;
+    -fx-font-weight: bold;
+}
+
+/* ==================== BADGES ==================== */
+.badge {
+    -fx-background-radius: 12;
+    -fx-padding: 4 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.badge-patron {
+    -fx-background-color: #E74C3C;
+}
+
+.badge-gerente {
+    -fx-background-color: #3498DB;
+}
+
+.badge-bodeguero {
+    -fx-background-color: #F39C12;
+}
+
+.badge-empleado {
+    -fx-background-color: #95A5A6;
+}
+
+/* ==================== MENÚ LATERAL ==================== */
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, #2C3E50 0%, #34495E 100%);
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-padding: 16 20;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+
+.menu-item:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ==================== HEADER ==================== */
+.header {
+    -fx-background-color: white;
+    -fx-border-color: -border-color;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 15 25;
+}
+
+/* ==================== SCROLLBAR ==================== */
+.scroll-bar .thumb {
+    -fx-background-color: #BDC3C7;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #95A5A6;
+}
+
+/* ==================== SCROLLPANE PERSONALIZADO ==================== */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 12px;
+}
+
+.scroll-pane .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-pref-height: 12px;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #BDC3C7;
+    -fx-background-radius: 6;
+}
+
+.scroll-pane .scroll-bar:horizontal .thumb {
+    -fx-background-color: #BDC3C7;
+    -fx-background-radius: 6;
+}
+
+.scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #95A5A6;
+}
+
+.scroll-pane .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #95A5A6;
+}
+
+.scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+}

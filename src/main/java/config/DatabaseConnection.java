@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
     // Cambia localhost por la IP de tu VM
-    private static final String URL = "jdbc:sqlserver://192.168.0.21:1433;databaseName=Db_DevSolutionsF;encrypt=true;trustServerCertificate=true";
+    private static final String URL = "jdbc:sqlserver://192.168.1.238:1433;databaseName=Db_DevSolutionsF;encrypt=true;trustServerCertificate=true";
     private static final String USER = "sa";
     private static final String PASSWORD = "Test12345.";
 

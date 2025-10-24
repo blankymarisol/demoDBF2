@@ -1,57 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Controller.CategoriaController" spacing="10" style="-fx-padding: 20;">
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx"
+            fx:controller="Controller.CategoriaController"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            vbarPolicy="AS_NEEDED"
+            stylesheets="@theme.css"
+            style="-fx-background-color: transparent;">
 
-    <Label text="Gestión de Categorías" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-    <Separator/>
+    <VBox spacing="20">
 
-    <!-- Formulario de Categoria -->
-    <GridPane hgap="10" vgap="10">
-        <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <TextField fx:id="txtNombre" GridPane.columnIndex="1" GridPane.rowIndex="0"
-                   promptText="Nombre de la categoría" prefWidth="300"/>
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
 
-        <Label text="Descripción:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <TextArea fx:id="txtDescripcion" GridPane.columnIndex="1" GridPane.rowIndex="1"
-                  promptText="Descripción de la categoría" prefWidth="300" prefHeight="80"/>
-    </GridPane>
+        <HBox alignment="CENTER_LEFT" spacing="15">
+            <Label text="📂 Gestión de Categorías" styleClass="titulo-principal"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="🔄 Actualizar"
+                    onAction="#cargarCategorias"
+                    styleClass="btn-secondary"/>
+            <Button text="📄 Exportar PDF"
+                    onAction="#exportarPDF"
+                    styleClass="btn-warning"/>
+        </HBox>
 
-    <!-- Botones de acción -->
-    <HBox spacing="10" alignment="CENTER">
-        <Button fx:id="btnNuevo" text="Nuevo" onAction="#nuevaCategoria" prefWidth="100"/>
-        <Button fx:id="btnGuardar" text="Guardar" onAction="#guardarCategoria" prefWidth="100"
-                style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
-        <Button fx:id="btnActualizar" text="Actualizar" onAction="#actualizarCategoria" prefWidth="100"
-                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
-        <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarCategoria" prefWidth="100"
-                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
-        <Button fx:id="btnLimpiar" text="Limpiar" onAction="#limpiarCampos" prefWidth="100"/>
-    </HBox>
+        <VBox styleClass="card" spacing="0">
 
-    <Separator/>
+            <HBox style="-fx-background-color: #2C3E50; -fx-background-radius: 8 8 0 0; -fx-padding: 15 20;">
+                <Label text="Información de la Categoría"
+                       style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 15px;"/>
+            </HBox>
 
-    <!-- Búsqueda y Exportar PDF -->
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Button text="↻ Actualizar Tabla" onAction="#cargarCategorias"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="📄 Exportar PDF" onAction="#exportarPDF"
-                style="-fx-background-color: #e67e22; -fx-text-fill: white;" prefWidth="130"/>
-    </HBox>
+            <VBox spacing="15" style="-fx-padding: 20;">
 
-    <!-- Tabla de categorias -->
-    <TableView fx:id="tblCategorias" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
-            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="250"/>
-            <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="450"/>
-        </columns>
-    </TableView>
+                <VBox spacing="5">
+                    <Label text="Nombre *" styleClass="label-form"/>
+                    <TextField fx:id="txtNombre" promptText="Nombre de la categoría"/>
+                </VBox>
 
-    <Label fx:id="lblMensaje" style="-fx-text-fill: blue; -fx-font-weight: bold;"/>
+                <VBox spacing="5">
+                    <Label text="Descripción" styleClass="label-form"/>
+                    <TextArea fx:id="txtDescripcion"
+                              promptText="Descripción de la categoría"
+                              prefRowCount="3"/>
+                </VBox>
 
-</VBox>
+            </VBox>
+
+            <HBox spacing="10" alignment="CENTER" style="-fx-padding: 0 20 20 20;">
+                <Button fx:id="btnNuevo"
+                        text="➕ Nuevo"
+                        onAction="#nuevaCategoria"
+                        styleClass="btn-secondary"
+                        prefWidth="110"/>
+
+                <Button fx:id="btnGuardar"
+                        text="💾 Guardar"
+                        onAction="#guardarCategoria"
+                        styleClass="btn-success"
+                        prefWidth="110"/>
+
+                <Button fx:id="btnActualizar"
+                        text="✏️ Actualizar"
+                        onAction="#actualizarCategoria"
+                        styleClass="btn-primary"
+                        prefWidth="110"/>
+
+                <Button fx:id="btnEliminar"
+                        text="🗑️ Eliminar"
+                        onAction="#eliminarCategoria"
+                        styleClass="btn-danger"
+                        prefWidth="110"/>
+
+                <Button fx:id="btnLimpiar"
+                        text="🧹 Limpiar"
+                        onAction="#limpiarCampos"
+                        styleClass="btn-secondary"
+                        prefWidth="110"/>
+            </HBox>
+
+            <HBox alignment="CENTER" style="-fx-padding: 0 20 15 20;">
+                <Label fx:id="lblMensaje" wrapText="true" style="-fx-min-height: 25px;"/>
+            </HBox>
+
+        </VBox>
+
+        <VBox styleClass="card" VBox.vgrow="ALWAYS">
+            <TableView fx:id="tblCategorias" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+                    <TableColumn fx:id="colNombre" text="Nombre" prefWidth="250"/>
+                    <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="450"/>
+                </columns>
+                <placeholder>
+                    <Label text="No hay categorías registradas"
+                           style="-fx-text-fill: #7F8C8D; -fx-font-style: italic;"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+
+    </VBox>
+</ScrollPane>
